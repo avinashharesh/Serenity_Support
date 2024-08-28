@@ -3,7 +3,6 @@
     <!-- Header Section -->
     <HeaderComponent />
 
-
     <!-- Registration Form Section -->
     <div class="register-container container mt-5">
       <div class="row justify-content-center">
@@ -107,6 +106,7 @@
 <script>
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
+
 export default {
   name: "RegisterPage",
   components: {
@@ -170,22 +170,21 @@ export default {
           ? null
           : "Passwords do not match.";
     },
-    register() 
-    {
+    register() {
       if (this.formValid) {
         const newUser = {
-        fullName: this.fullName,
-        username: this.username,
-        email: this.email,
-        role: this.role,
-        password: this.password,  // Store the password for simplicity
-      };
+          fullName: this.fullName,
+          username: this.username,
+          email: this.email,
+          role: this.role,
+          password: this.password,  // Store the password for simplicity
+        };
 
-      // Store user data in Vuex store
-      this.$store.dispatch('registerUser', newUser);
+        // Store user data in Vuex store
+        this.$store.dispatch('registerUser', newUser);
 
-      // After registration, navigate to the dashboard
-      this.$router.push({ name: 'Dashboard' });
+        // After registration, navigate to the dashboard
+        this.$router.push({ name: 'Dashboard' });
       }
     }
   },

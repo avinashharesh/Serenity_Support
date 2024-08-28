@@ -22,6 +22,8 @@ export default createStore({
       } else {
         state.ratings.push({ userId, rating });  // Add new rating if not already rated
       }
+      // Persist ratings to localStorage
+      localStorage.setItem('ratings', JSON.stringify(state.ratings));
     },
     setLoggedIn(state, isLogged) {
       state.isLogged = isLogged;
@@ -77,4 +79,5 @@ export default createStore({
       };
     },
   },
+  modules: {},
 });
