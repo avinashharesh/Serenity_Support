@@ -42,7 +42,7 @@
           <button class="btn btn-primary mt-3" @click="submitRating" :disabled="rating === 0">Submit Rating</button>
   
           <p class="mt-3">Your Rating: <strong>{{ userRating }}</strong> / 5</p>
-          <p class="mt-3">Average Rating: <strong>{{ averageRating }}</strong> / 5</p>
+          <p class="mt-3">Average Rating Of All Users: <strong>{{ averageRating }}</strong> / 5</p>
         </div>
       </div>
     </div>

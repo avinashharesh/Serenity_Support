@@ -9,7 +9,8 @@
         <div class="container">
           <h2>Supporting Mental Health for All</h2>
           <p>We provide resources, virtual support, and a community to help you manage your mental health.</p>
-          <router-link to="/register" class="btn btn-primary">Join Us Today</router-link>
+          <!-- Conditionally render the button if the user is not logged in -->
+          <router-link v-if="!isLoggedIn" to="/register" class="btn btn-primary">Join Us Today</router-link>
         </div>
       </section>
 
@@ -64,7 +65,7 @@ export default {
     FooterComponent,  // Register FooterComponent
   },
   computed: {
-    ...mapGetters(['averageRating']),  // Fetch the average rating from Vuex
+    ...mapGetters(['averageRating', 'isLoggedIn']),  // Fetch the average rating and logged-in status from Vuex
   },
   methods: {
     renderStars(rating) {

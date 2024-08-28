@@ -83,6 +83,7 @@
     },
     methods: {
       logout() {
+        alert("Logged Out Successfuly!")
         this.$store.dispatch('logoutUser');  // Trigger logout action
         this.$router.push('/');  // Redirect to Home page after logout
       },

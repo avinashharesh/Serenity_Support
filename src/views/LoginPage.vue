@@ -98,9 +98,12 @@ export default {
 
         const loginSuccessful = await this.$store.dispatch('loginUser', credentials);
 
-        if (loginSuccessful) {
-          // Redirect to the dashboard if login is successful
-          this.$router.push({ name: 'Dashboard' });
+        if (loginSuccessful) {  
+          alert("Logged In Successfuly")
+
+        // After registration, navigate to the home page
+        this.$router.push({ name: 'Home' });
+
         } else {
           // Show login error if credentials are incorrect
           this.loginError = "Invalid email or password. Please try again.";
