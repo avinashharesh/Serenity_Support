@@ -1,26 +1,7 @@
 <template>
   <div class="login-page">
     <!-- Header Section -->
-    <header class="header bg-dark text-white">
-      <nav class="navbar navbar-expand-lg navbar-dark container">
-        <h1 class="navbar-brand">
-          <router-link class="nav-link" to="/">Health Charity</router-link>
-        </h1>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/register">Register</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+    <HeaderComponent />
 
     <!-- Login Form Section -->
     <div class="login-container container mt-5">
@@ -55,6 +36,8 @@
               <div v-if="passwordError" class="text-danger mt-1">{{ passwordError }}</div>
             </div>
 
+            <div v-if="loginError" class="text-danger text-center mt-3">{{ loginError }}</div>
+
             <button type="submit" class="btn btn-primary w-100" :disabled="!formValid">
               Login
             </button>
@@ -67,17 +50,25 @@
       </div>
     </div>
   </div>
+  <FooterComponent />
 </template>
 
 <script>
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import FooterComponent from '@/components/FooterComponent.vue';
 export default {
   name: "LoginPage",
+  components: {
+    HeaderComponent,  // Register HeaderComponent
+    FooterComponent,  // Register FooterComponent
+  },
   data() {
     return {
       email: "",
       password: "",
       emailError: null,
       passwordError: null,
+      loginError: null,  // To display login errors
     };
   },
   computed: {
@@ -98,10 +89,22 @@ export default {
           ? null
           : "Password must be at least 6 characters long.";
     },
-    login() {
+    async login() {
       if (this.formValid) {
-        // Perform login logic here (e.g., call an API or Firebase Auth)
-        alert("Login successful!"); // Replace with actual login logic
+        const credentials = {
+          email: this.email,
+          password: this.password,
+        };
+
+        const loginSuccessful = await this.$store.dispatch('loginUser', credentials);
+
+        if (loginSuccessful) {
+          // Redirect to the dashboard if login is successful
+          this.$router.push({ name: 'Dashboard' });
+        } else {
+          // Show login error if credentials are incorrect
+          this.loginError = "Invalid email or password. Please try again.";
+        }
       }
     },
   },

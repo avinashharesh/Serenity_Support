@@ -1,26 +1,7 @@
 <template>
   <div class="home-page">
     <!-- Header Section -->
-    <header class="header bg-dark text-white">
-      <nav class="navbar navbar-expand-lg navbar-dark container">
-        <h1 class="navbar-brand">
-          <router-link class="nav-link" to="/">Health Charity</router-link>
-        </h1>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/login">Login</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/register">Register</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+    <HeaderComponent />
 
     <!-- Main Content Section -->
     <main class="main-content py-5">
@@ -58,25 +39,46 @@
       <section class="ratings text-center mt-5 bg-warning text-white py-4">
         <div class="container">
           <h3>What Our Users Say</h3>
-          <p>Average Rating: <strong>{{ averageRating }}</strong> ★★★★★</p>
+          <p>
+            Average Rating: <strong>{{ averageRating }}</strong>
+            <span v-html="renderStars(averageRating)"></span>
+          </p>
         </div>
       </section>
     </main>
 
     <!-- Footer Section -->
-    <footer class="footer bg-dark text-white text-center py-3">
-      <p>&copy; 2024 Health Charity. All rights reserved.</p>
-    </footer>
+    <FooterComponent />
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import FooterComponent from '@/components/FooterComponent.vue';
+
 export default {
   name: "HomePage",
-  data() {
-    return {
-      averageRating: 4.5,
-    };
+  components: {
+    HeaderComponent,  // Register HeaderComponent
+    FooterComponent,  // Register FooterComponent
+  },
+  computed: {
+    ...mapGetters(['averageRating']),  // Fetch the average rating from Vuex
+  },
+  methods: {
+    renderStars(rating) {
+      const fullStars = Math.floor(rating);  // Number of full stars
+      const halfStar = rating % 1 !== 0;  // Check if there is a half star
+      const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);  // Number of empty stars
+
+      // Generate star HTML
+      return (
+        '★'.repeat(fullStars) +
+        (halfStar ? '½' : '') +
+        '☆'.repeat(emptyStars)
+      );
+    },
   },
 };
 </script>
@@ -101,5 +103,9 @@ export default {
   margin-top: 2rem;
   padding: 1rem;
   border-radius: 10px;
+}
+
+.star {
+  color: gold;
 }
 </style>

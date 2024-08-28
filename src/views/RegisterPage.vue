@@ -1,26 +1,8 @@
 <template>
   <div class="register-page">
     <!-- Header Section -->
-    <header class="header bg-dark text-white">
-      <nav class="navbar navbar-expand-lg navbar-dark container">
-        <h1 class="navbar-brand">
-          <router-link class="nav-link" to="/">Health Charity</router-link>
-        </h1>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/login">Login</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+    <HeaderComponent />
+
 
     <!-- Registration Form Section -->
     <div class="register-container container mt-5">
@@ -91,6 +73,22 @@
               <div v-if="confirmPasswordError" class="text-danger mt-1">{{ confirmPasswordError }}</div>
             </div>
 
+            <!-- Role Selection -->
+            <div class="mb-3">
+              <label for="role" class="form-label">Role:</label>
+              <select
+                id="role"
+                v-model="role"
+                required
+                class="form-select"
+              >
+                <option value="" disabled>Select a role</option>
+                <option value="admin">Admin</option>
+                <option value="non-admin">Non-Admin</option>
+              </select>
+              <div v-if="roleError" class="text-danger mt-1">{{ roleError }}</div>
+            </div>
+
             <button type="submit" class="btn btn-primary w-100" :disabled="!formValid">
               Register
             </button>
@@ -103,11 +101,18 @@
       </div>
     </div>
   </div>
+  <FooterComponent />
 </template>
 
 <script>
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import FooterComponent from '@/components/FooterComponent.vue';
 export default {
   name: "RegisterPage",
+  components: {
+    HeaderComponent,  // Register HeaderComponent
+    FooterComponent,  // Register FooterComponent
+  },
   data() {
     return {
       fullName: "",
@@ -115,10 +120,12 @@ export default {
       email: "",
       password: "",
       confirmPassword: "",
+      role: "",  // Add role to the form data
       usernameError: null,
       emailError: null,
       passwordError: null,
       confirmPasswordError: null,
+      roleError: null,
     };
   },
   computed: {
@@ -129,10 +136,12 @@ export default {
         this.email &&
         this.password &&
         this.confirmPassword &&
+        this.role &&  // Check if a role is selected
         !this.usernameError &&
         !this.emailError &&
         !this.passwordError &&
-        !this.confirmPasswordError
+        !this.confirmPasswordError &&
+        !this.roleError
       );
     },
   },
@@ -161,25 +170,24 @@ export default {
           ? null
           : "Passwords do not match.";
     },
-    register() {
-    if (this.formValid) {
-      const registeredUser = {
+    register() 
+    {
+      if (this.formValid) {
+        const newUser = {
         fullName: this.fullName,
         username: this.username,
         email: this.email,
+        role: this.role,
+        password: this.password,  // Store the password for simplicity
       };
 
-      // After successful registration, navigate to the dashboard page with query parameters
-      this.$router.push({
-        name: "Dashboard",
-        query: {
-          fullName: registeredUser.fullName,
-          username: registeredUser.username,
-          email: registeredUser.email,
-        }
-      });
+      // Store user data in Vuex store
+      this.$store.dispatch('registerUser', newUser);
+
+      // After registration, navigate to the dashboard
+      this.$router.push({ name: 'Dashboard' });
+      }
     }
-  },
   },
 };
 </script>
