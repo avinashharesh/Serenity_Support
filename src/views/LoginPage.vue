@@ -1,200 +1,132 @@
 <template>
-    <div class="login-page">
-      <!-- Header Section -->
-      <header class="header">
-        <nav class="navbar">
-          <h1 class="brand">Health Charity</h1>
-          <ul class="nav-links">
-            <li><router-link to="/">Home</router-link></li>
-            <li><router-link to="/register">Register</router-link></li>
+  <div class="login-page">
+    <!-- Header Section -->
+    <header class="header bg-dark text-white">
+      <nav class="navbar navbar-expand-lg navbar-dark container">
+        <h1 class="navbar-brand">
+          <router-link class="nav-link" to="/">Health Charity</router-link>
+        </h1>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <router-link class="nav-link" to="/">Home</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/register">Register</router-link>
+            </li>
           </ul>
-        </nav>
-      </header>
-  
-      <!-- Login Form Section -->
-      <div class="login-container">
-        <h2>Login to Your Account</h2>
-        <form @submit.prevent="login">
-          <div class="form-group">
-            <label for="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              required
-              @input="validateEmail"
-            />
-            <span v-if="emailError" class="error">{{ emailError }}</span>
-          </div>
-  
-          <div class="form-group">
-            <label for="password">Password:</label>
-            <input
-              type="password"
-              id="password"
-              v-model="password"
-              required
-              minlength="6"
-              @input="validatePassword"
-            />
-            <span v-if="passwordError" class="error">{{ passwordError }}</span>
-          </div>
-  
-          <button type="submit" class="login-button" :disabled="!formValid">
-            Login
-          </button>
-        </form>
-  
-        <p class="register-link">
-          Don't have an account? <router-link to="/register">Register here</router-link>
-        </p>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Login Form Section -->
+    <div class="login-container container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <h2 class="text-center mb-4">Login to Your Account</h2>
+          <form @submit.prevent="login">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email:</label>
+              <input
+                type="email"
+                id="email"
+                v-model="email"
+                required
+                @input="validateEmail"
+                class="form-control"
+              />
+              <div v-if="emailError" class="text-danger mt-1">{{ emailError }}</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password:</label>
+              <input
+                type="password"
+                id="password"
+                v-model="password"
+                required
+                minlength="6"
+                @input="validatePassword"
+                class="form-control"
+              />
+              <div v-if="passwordError" class="text-danger mt-1">{{ passwordError }}</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" :disabled="!formValid">
+              Login
+            </button>
+          </form>
+
+          <p class="text-center mt-3">
+            Don't have an account? <router-link to="/register">Register here</router-link>
+          </p>
+        </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "LoginPage",
-    data() {
-      return {
-        email: "",
-        password: "",
-        emailError: null,
-        passwordError: null,
-      };
+  </div>
+</template>
+
+<script>
+export default {
+  name: "LoginPage",
+  data() {
+    return {
+      email: "",
+      password: "",
+      emailError: null,
+      passwordError: null,
+    };
+  },
+  computed: {
+    formValid() {
+      return this.email && this.password && !this.emailError && !this.passwordError;
     },
-    computed: {
-      formValid() {
-        return this.email && this.password && !this.emailError && !this.passwordError;
-      },
+  },
+  methods: {
+    validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailError = emailPattern.test(this.email)
+        ? null
+        : "Please enter a valid email address.";
     },
-    methods: {
-      validateEmail() {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        this.emailError = emailPattern.test(this.email)
+    validatePassword() {
+      this.passwordError =
+        this.password.length >= 6
           ? null
-          : "Please enter a valid email address.";
-      },
-      validatePassword() {
-        this.passwordError =
-          this.password.length >= 6
-            ? null
-            : "Password must be at least 6 characters long.";
-      },
-      login() {
-        if (this.formValid) {
-          // Perform login logic here (e.g., call an API or Firebase Auth)
-          alert("Login successful!"); // Replace with actual login logic
-        }
-      },
+          : "Password must be at least 6 characters long.";
     },
-  };
-  </script>
-  
-  <style scoped>
-  .login-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100vh;
-    background-color: #f7f7f7;
-  }
-  
-  .header {
-    width: 100%;
-    background-color: #2c3e50;
-    padding: 1rem;
-    color: white;
-  }
-  
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .nav-links a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  .login-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    margin-top: 2rem;
-  }
-  
-  h2 {
-    margin-bottom: 1.5rem;
-    color: #2c3e50;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-    text-align: left;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #34495e;
-  }
-  
-  input {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-  }
-  
-  .error {
-    color: #e74c3c;
-    font-size: 0.875rem;
-  }
-  
-  .login-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .login-button:disabled {
-    background-color: #bdc3c7;
-  }
-  
-  .register-link {
-    margin-top: 1rem;
-    font-size: 0.875rem;
-  }
-  
-  .register-link a {
-    color: #3498db;
-    text-decoration: none;
-  }
-  </style>
-  
+    login() {
+      if (this.formValid) {
+        // Perform login logic here (e.g., call an API or Firebase Auth)
+        alert("Login successful!"); // Replace with actual login logic
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+.login-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
+
+.header {
+  width: 100%;
+}
+
+.login-container {
+  margin-top: 3rem;
+}
+
+.text-danger {
+  font-size: 0.875rem;
+}
+</style>

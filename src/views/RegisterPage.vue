@@ -1,86 +1,106 @@
 <template>
   <div class="register-page">
     <!-- Header Section -->
-    <header class="header">
-      <nav class="navbar">
-        <h1 class="brand">Health Charity</h1>
-        <ul class="nav-links">
-          <li><router-link to="/">Home</router-link></li>
-          <li><router-link to="/login">Login</router-link></li>
-        </ul>
+    <header class="header bg-dark text-white">
+      <nav class="navbar navbar-expand-lg navbar-dark container">
+        <h1 class="navbar-brand">
+          <router-link class="nav-link" to="/">Health Charity</router-link>
+        </h1>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <router-link class="nav-link" to="/">Home</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/login">Login</router-link>
+            </li>
+          </ul>
+        </div>
       </nav>
     </header>
 
     <!-- Registration Form Section -->
-    <div class="register-container">
-      <h2>Create Your Account</h2>
-      <form @submit.prevent="register">
-        <div class="form-group">
-          <label for="fullName">Full Name:</label>
-          <input
-            type="text"
-            id="fullName"
-            v-model="fullName"
-            required
-          />
+    <div class="register-container container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <h2 class="text-center mb-4">Create Your Account</h2>
+          <form @submit.prevent="register">
+            <div class="mb-3">
+              <label for="fullName" class="form-label">Full Name:</label>
+              <input
+                type="text"
+                id="fullName"
+                v-model="fullName"
+                required
+                class="form-control"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Username:</label>
+              <input
+                type="text"
+                id="username"
+                v-model="username"
+                required
+                @input="validateUsername"
+                class="form-control"
+              />
+              <div v-if="usernameError" class="text-danger mt-1">{{ usernameError }}</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email:</label>
+              <input
+                type="email"
+                id="email"
+                v-model="email"
+                required
+                @input="validateEmail"
+                class="form-control"
+              />
+              <div v-if="emailError" class="text-danger mt-1">{{ emailError }}</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password:</label>
+              <input
+                type="password"
+                id="password"
+                v-model="password"
+                required
+                @input="validatePassword"
+                class="form-control"
+              />
+              <div v-if="passwordError" class="text-danger mt-1">{{ passwordError }}</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password:</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                v-model="confirmPassword"
+                required
+                @input="validateConfirmPassword"
+                class="form-control"
+              />
+              <div v-if="confirmPasswordError" class="text-danger mt-1">{{ confirmPasswordError }}</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" :disabled="!formValid">
+              Register
+            </button>
+          </form>
+
+          <p class="text-center mt-3">
+            Already have an account? <router-link to="/login">Login here</router-link>
+          </p>
         </div>
-
-        <div class="form-group">
-          <label for="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            v-model="username"
-            required
-            @input="validateUsername"
-          />
-          <span v-if="usernameError" class="error">{{ usernameError }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            v-model="email"
-            required
-            @input="validateEmail"
-          />
-          <span v-if="emailError" class="error">{{ emailError }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            required
-            @input="validatePassword"
-          />
-          <span v-if="passwordError" class="error">{{ passwordError }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password:</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            v-model="confirmPassword"
-            required
-            @input="validateConfirmPassword"
-          />
-          <span v-if="confirmPasswordError" class="error">{{ confirmPasswordError }}</span>
-        </div>
-
-        <button type="submit" class="register-button" :disabled="!formValid">
-          Register
-        </button>
-      </form>
-
-      <p class="login-link">
-        Already have an account? <router-link to="/login">Login here</router-link>
-      </p>
+      </div>
     </div>
   </div>
 </template>
@@ -142,11 +162,24 @@ export default {
           : "Passwords do not match.";
     },
     register() {
-      if (this.formValid) {
-        // Perform registration logic here (e.g., call an API or Firebase Auth)
-        alert("Registration successful!"); // Replace with actual registration logic
-      }
-    },
+    if (this.formValid) {
+      const registeredUser = {
+        fullName: this.fullName,
+        username: this.username,
+        email: this.email,
+      };
+
+      // After successful registration, navigate to the dashboard page with query parameters
+      this.$router.push({
+        name: "Dashboard",
+        query: {
+          fullName: registeredUser.fullName,
+          username: registeredUser.username,
+          email: registeredUser.email,
+        }
+      });
+    }
+  },
   },
 };
 </script>
@@ -157,103 +190,19 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f7f7f7;
 }
 
 .header {
   width: 100%;
-  background-color: #2c3e50;
-  padding: 1rem;
-  color: white;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.brand {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
 }
 
 .register-container {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
-h2 {
-  margin-bottom: 1.5rem;
-  color: #2c3e50;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #34495e;
-}
-
-input {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-.error {
-  color: #e74c3c;
+.text-danger {
   font-size: 0.875rem;
-}
-
-.register-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.register-button:disabled {
-  background-color: #bdc3c7;
-}
-
-.login-link {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-}
-
-.login-link a {
-  color: #3498db;
-  text-decoration: none;
 }
 </style>
