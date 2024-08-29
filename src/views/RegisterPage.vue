@@ -28,7 +28,7 @@
                 id="username"
                 v-model="username"
                 required
-                @input="sanitizeInput('username'); validateUsername"
+                @input="validateUsername"
                 class="form-control"
               />
               <div v-if="usernameError" class="text-danger mt-1">{{ usernameError }}</div>
@@ -41,7 +41,7 @@
                 id="email"
                 v-model="email"
                 required
-                @input="sanitizeInput('email'); validateEmail"
+                @input="validateEmail"
                 class="form-control"
               />
               <div v-if="emailError" class="text-danger mt-1">{{ emailError }}</div>
@@ -54,7 +54,7 @@
                 id="password"
                 v-model="password"
                 required
-                @input="sanitizeInput('password'); validatePassword"
+                @input="validatePassword"
                 class="form-control"
               />
               <div v-if="passwordError" class="text-danger mt-1">{{ passwordError }}</div>
@@ -67,7 +67,7 @@
                 id="confirmPassword"
                 v-model="confirmPassword"
                 required
-                @input="sanitizeInput('confirmPassword'); validateConfirmPassword"
+                @input="validateConfirmPassword"
                 class="form-control"
               />
               <div v-if="confirmPasswordError" class="text-danger mt-1">{{ confirmPasswordError }}</div>
@@ -80,7 +80,6 @@
                 id="role"
                 v-model="role"
                 required
-                @change="sanitizeInput('role')"
                 class="form-select"
               >
                 <option value="" disabled>Select a role</option>
@@ -108,13 +107,13 @@
 <script>
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
-import DOMPurify from 'dompurify';  // Import DOMPurify
+import DOMPurify from 'dompurify';
 
 export default {
   name: "RegisterPage",
   components: {
-    HeaderComponent,  // Register HeaderComponent
-    FooterComponent,  // Register FooterComponent
+    HeaderComponent,
+    FooterComponent,
   },
   data() {
     return {
@@ -123,7 +122,7 @@ export default {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "",  // Add role to the form data
+      role: "",
       usernameError: null,
       emailError: null,
       passwordError: null,
@@ -139,7 +138,7 @@ export default {
         this.email &&
         this.password &&
         this.confirmPassword &&
-        this.role &&  // Check if a role is selected
+        this.role &&
         !this.usernameError &&
         !this.emailError &&
         !this.passwordError &&
@@ -177,19 +176,22 @@ export default {
           : "Passwords do not match.";
     },
     register() {
+      this.validateUsername();
+      this.validateEmail();
+      this.validatePassword();
+      this.validateConfirmPassword();
+
       if (this.formValid) {
         const newUser = {
           fullName: this.fullName,
           username: this.username,
           email: this.email,
-          role: this.role,
-          password: this.password,  // Store the password for simplicity
+          role: this.role === 'admin' ? 'admin' : 'non-admin',
+          password: this.password,
         };
 
-        // Store user data in Vuex store
         this.$store.dispatch('registerUser', newUser);
-        alert("Registered Successfuly")
-        // After registration, navigate to the home page
+        alert("Registered Successfully");
         this.$router.push({ name: 'Home' });
       }
     }
