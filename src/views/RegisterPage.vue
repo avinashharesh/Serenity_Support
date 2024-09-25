@@ -108,6 +108,9 @@
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
 import DOMPurify from 'dompurify';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from '@/firebaseConfig';
+
 
 export default {
   name: "RegisterPage",
@@ -189,10 +192,19 @@ export default {
           role: this.role === 'admin' ? 'admin' : 'non-admin',
           password: this.password,
         };
-
-        this.$store.dispatch('registerUser', newUser);
-        alert("Registered Successfully");
-        this.$router.push({ name: 'Home' });
+        // this.$store.dispatch('registerUser', newUser);
+        createUserWithEmailAndPassword(auth, this.email, this.password)
+        .then((data) => {
+          console.log("Firebase Register Successful!");
+          alert("Registered Successfully");
+          // Redirect to login page after successful registration
+          this.$router.push({ name: 'Home' });
+        })
+        .catch((error) => {
+          console.log(error.code);
+        });
+        // alert("Registered Successfully");
+        // this.$router.push({ name: 'Home' });
       }
     }
   },
