@@ -110,6 +110,7 @@ import FooterComponent from '@/components/FooterComponent.vue';
 import DOMPurify from 'dompurify';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from '@/firebaseConfig';
+import { doc,setDoc } from 'firebase/firestore';
 
 
 export default {

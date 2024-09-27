@@ -56,6 +56,8 @@
 <script>
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
+import { auth } from '@/firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 export default {
   name: "LoginPage",
   components: {
@@ -95,19 +97,26 @@ export default {
           email: this.email,
           password: this.password,
         };
-
-        const loginSuccessful = await this.$store.dispatch('loginUser', credentials);
-
-        if (loginSuccessful) {  
+        signInWithEmailAndPassword(auth,this.email,this.password).then((data)=>{
+          console.log("Firebase Login Successful")
           alert("Logged In Successfuly")
+          this.$router.push({ name: 'Home' })
+        }).catch((error)=>{
+          console.log(error.code)
+        })
 
-        // After registration, navigate to the home page
-        this.$router.push({ name: 'Home' });
+        // const loginSuccessful = await this.$store.dispatch('loginUser', credentials);
 
-        } else {
-          // Show login error if credentials are incorrect
-          this.loginError = "Invalid email or password. Please try again.";
-        }
+        // if (loginSuccessful) {  
+        //   alert("Logged In Successfuly")
+
+        // // After registration, navigate to the home page
+        // this.$router.push({ name: 'Home' });
+
+        // } else {
+        //   // Show login error if credentials are incorrect
+        //   this.loginError = "Invalid email or password. Please try again.";
+        // }
       }
     },
   },
