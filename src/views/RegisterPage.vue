@@ -109,9 +109,8 @@ import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
 import DOMPurify from 'dompurify';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '@/firebaseConfig';
+import { auth, db } from '@/firebaseConfig';
 import { doc,setDoc } from 'firebase/firestore';
-
 
 export default {
   name: "RegisterPage",
@@ -186,20 +185,23 @@ export default {
       this.validateConfirmPassword();
 
       if (this.formValid) {
-        const newUser = {
-          fullName: this.fullName,
-          username: this.username,
-          email: this.email,
-          role: this.role === 'admin' ? 'admin' : 'non-admin',
-          password: this.password,
-        };
-        // this.$store.dispatch('registerUser', newUser);
+        const userData = {
+            fullName: this.fullName,
+            username: this.username,
+            email: this.email,
+            role: this.role === 'admin' ? 'admin' : 'non-admin',
+          };
+
         createUserWithEmailAndPassword(auth, this.email, this.password)
         .then((data) => {
+          const user=data.user
           console.log("Firebase Register Successful!");
           alert("Registered Successfully");
+          this.$store.dispatch('registerUser', userData);
           // Redirect to login page after successful registration
           this.$router.push({ name: 'Home' });
+          // Save user data in Firestore under 'users' collection
+          setDoc(doc(db, "users", user.uid), userData); // 'user.uid' ensures each user gets their own document
         })
         .catch((error) => {
           console.log(error.code);

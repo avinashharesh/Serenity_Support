@@ -31,7 +31,6 @@ export default createStore({
   },
   actions: {
     registerUser({ commit }, user) {
-      commit('addUser', user);
       commit('setCurrentUser', user);
       commit('setLoggedIn', true);  // Set isLogged to true when a user registers
     },

@@ -56,8 +56,10 @@
 <script>
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
-import { auth } from '@/firebaseConfig';
+import { auth, db } from '@/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+
 export default {
   name: "LoginPage",
   components: {
@@ -68,6 +70,9 @@ export default {
     return {
       email: "",
       password: "",
+      fullName: "",
+      username: "",
+      role: "",
       emailError: null,
       passwordError: null,
       loginError: null,  // To display login errors
@@ -93,30 +98,41 @@ export default {
     },
     async login() {
       if (this.formValid) {
-        const credentials = {
-          email: this.email,
-          password: this.password,
-        };
-        signInWithEmailAndPassword(auth,this.email,this.password).then((data)=>{
-          console.log("Firebase Login Successful")
-          alert("Logged In Successfuly")
-          this.$router.push({ name: 'Home' })
-        }).catch((error)=>{
-          console.log(error.code)
-        })
+        try {
+          // Sign in with email and password
+          const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
+          const user = userCredential.user;
 
-        // const loginSuccessful = await this.$store.dispatch('loginUser', credentials);
+          console.log("Firebase Login Successful");
 
-        // if (loginSuccessful) {  
-        //   alert("Logged In Successfuly")
+          // Retrieve the user data from Firestore using the user's UID
+          const userDocSnapshot = await getDoc(doc(db, "users", user.uid));
 
-        // // After registration, navigate to the home page
-        // this.$router.push({ name: 'Home' });
+          if (userDocSnapshot.exists()) {
+            // Extract and store the user data in the variables
+            const userData = userDocSnapshot.data();
+            this.fullName = userData.fullName;
+            this.username = userData.username;
+            this.email = userData.email;
+            this.role = userData.role;
 
-        // } else {
-        //   // Show login error if credentials are incorrect
-        //   this.loginError = "Invalid email or password. Please try again.";
-        // }
+            console.log("User data retrieved from Firestore:", userData);
+
+            alert("Logged in successfully");
+
+            // Optionally, store user data in Vuex store (if you're using Vuex)
+            this.$store.dispatch('registerUser', userData);
+
+            // Redirect to the home page after successful login
+            this.$router.push({ name: 'Home' });
+          } else {
+            console.log("No user data found in Firestore.");
+            this.loginError = "User profile not found.";
+          }
+        } catch (error) {
+          console.error("Error during login:", error);
+          this.loginError = "Login failed. Please check your credentials.";
+        }
       }
     },
   },
