@@ -3,6 +3,7 @@ import HomePage from '@/views/HomePage.vue';
 import LoginPage from '@/views/LoginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
 import DashboardPage from '@/views/DashboardPage.vue';
+import ContactPage from '@/views/ContactPage.vue';
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path:'/dashboard',
     name:'Dashboard',
     component:DashboardPage,
+  },
+  {
+    path:'/contact',
+    name:'Contact',
+    component:ContactPage
   }
 
 ];
