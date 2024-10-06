@@ -19,6 +19,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "firebase": "^10.13.2",
+    "jspdf": "^2.5.2",
+    "mapbox-gl": "^3.7.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.15",
     "vue": "^3.4.29",

@@ -72,8 +72,14 @@
             </tbody>
           </table>
 
+          <!-- Export Buttons -->
+          <div class="export-buttons mt-3">
+            <button class="btn btn-secondary" @click="exportToCSV">Export as CSV</button>
+            <button class="btn btn-secondary" @click="exportToPDF">Export as PDF</button>
+          </div>
+
           <!-- Pagination Controls -->
-          <div class="pagination-controls">
+          <div class="pagination-controls mt-3">
             <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
             <span>Page {{ currentPage }} of {{ totalPages }}</span>
             <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
@@ -91,29 +97,20 @@
           <li>Participate in Forums</li>
         </ul>
       </div>
-
-      <!-- Rating Section -->
-      <div class="rating-section mt-5">
-        <h4>Rate Our Website</h4>
-        <div class="stars">
-          <span v-for="star in 5" :key="star" class="star" :class="{ filled: star <= rating }" @click="rate(star)">&#9733;</span>
-        </div>
-        <button class="btn btn-primary mt-3" @click="submitRating" :disabled="rating === 0">Submit Rating</button>
-
-        <p class="mt-3">Your Rating: <strong>{{ userRating }}</strong> / 5</p>
-        <p class="mt-3">Average Rating Of All Users: <strong>{{ averageRating }}</strong> / 5</p>
-      </div>
     </div>
-    <FooterComponent />
-  </div>
-</template>
 
+    <!-- Footer -->
+    
+  </div>
+  <FooterComponent />
+</template>
 <script>
 import { mapGetters } from 'vuex';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
+import { jsPDF } from 'jspdf'; // For PDF export
 
 export default {
   name: "DashboardPage",
@@ -204,6 +201,55 @@ export default {
         alert('Thank you for your rating!');
         this.rating = 0;  // Reset rating after submission
       }
+    },
+    // Export as CSV
+    exportToCSV() {
+      const csvRows = [];
+      const headers = ['Full Name', 'Username', 'Email'];
+      csvRows.push(headers.join(',')); // Add headers
+
+      // Add user data
+      this.users.forEach(user => {
+        const row = [user.fullName, user.username, user.email];
+        csvRows.push(row.join(','));
+      });
+
+      // Create CSV blob and download
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('hidden', '');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'users.csv');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    },
+    // Export as PDF
+    exportToPDF() {
+      const doc = new jsPDF();
+      let y = 10;
+      doc.setFontSize(16);
+      doc.text('User Management Report', 10, y);
+      doc.setFontSize(12);
+      y += 10;
+
+      // Add table headers
+      doc.text('Full Name', 10, y);
+      doc.text('Username', 60, y);
+      doc.text('Email', 110, y);
+      y += 10;
+
+      // Add user data
+      this.users.forEach(user => {
+        doc.text(user.fullName, 10, y);
+        doc.text(user.username, 60, y);
+        doc.text(user.email, 110, y);
+        y += 10;
+      });
+
+      // Save the PDF
+      doc.save('users.pdf');
     }
   },
   mounted() {
@@ -267,6 +313,27 @@ th, td {
 
 .pagination-controls button {
   padding: 5px 10px;
+}
+
+.export-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.export-buttons button {
+  margin-left: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.export-buttons button:hover {
+  background-color: #0056b3;
 }
 
 .rating-section {
