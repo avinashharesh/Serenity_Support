@@ -11,7 +11,10 @@
           <h2>Supporting Mental Health for All</h2>
           <p>We provide resources, virtual support, and a community to help you manage your mental health.</p>
           <!-- Conditionally render the button if the user is not logged in -->
-          <router-link v-if="!isLoggedIn" to="/register" class="btn btn-primary">Join Us Today</router-link>
+          <router-link v-if="!isLoggedIn" to="/register" class="btn btn-primary mb-3">Join Us Today</router-link>
+
+          <!-- Conditionally render Book Appointment Button if the user is logged in -->
+          <router-link v-if="isLoggedIn" to="/book-appointment" class="btn btn-outline-secondary">Book an Appointment</router-link>
         </div>
       </section>
 
@@ -37,6 +40,13 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- Appointment Section -->
+      <section class="appointment-section container text-center mt-5" v-if="isLoggedIn">
+        <h3>Book an Appointment with a Professional</h3>
+        <p>Need personalized support? Schedule an appointment with one of our mental health professionals.</p>
+        <router-link to="/book-appointment" class="btn btn-success">Book an Appointment</router-link>
       </section>
 
       <!-- Map Section -->
@@ -89,8 +99,8 @@
     </main>
 
     <!-- Footer Section -->
-    <FooterComponent />
   </div>
+  <FooterComponent />
 </template>
 
 <script>
@@ -126,108 +136,109 @@ export default {
         '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars)
       );
     },
-  // Initialize Map with Melbourne as the default center
-  initializeMap() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYXZpbmFzaGhhcmVzaCIsImEiOiJjbTF4ZjVuNXgweW85MmxxMTlqN256ZDJwIn0.z9SZkH3b1ogAluLnq3ettA'; // Replace with your Mapbox token
-    this.map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [144.9631, -37.8136], // Default coordinates (Melbourne)
-      zoom: 12,
-    });
 
-    // Add navigation control (zoom in/out)
-    this.map.addControl(new mapboxgl.NavigationControl());
-
-    // Get user's location and update map
-    this.getUserLocation()
-      .then(location => {
-        this.map.setCenter([location.longitude, location.latitude]);
-      })
-      .catch(() => {
-        console.log("Using default center: Melbourne");
+    // Initialize Map with Melbourne as the default center
+    initializeMap() {
+      mapboxgl.accessToken = 'pk.eyJ1IjoiYXZpbmFzaGhhcmVzaCIsImEiOiJjbTF4ZjVuNXgweW85MmxxMTlqN256ZDJwIn0.z9SZkH3b1ogAluLnq3ettA'; // Replace with your Mapbox token
+      this.map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [144.9631, -37.8136], // Default coordinates (Melbourne)
+        zoom: 12,
       });
-  },
 
-  // Helper function to get user's location asynchronously
-  getUserLocation() {
-    return new Promise((resolve, reject) => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            const { latitude, longitude } = position.coords;
-            resolve({ latitude, longitude });
-          },
-          error => {
-            reject(error);
-          }
-        );
-      } else {
-        reject(new Error('Geolocation not supported'));
-      }
-    });
-  },
+      // Add navigation control (zoom in/out)
+      this.map.addControl(new mapboxgl.NavigationControl());
 
-  // Search places near user's location or Melbourne
-  async searchPlaces() {
-    const query = this.searchQuery.trim(); // Get search input
-    if (!query) {
-      alert('Please enter a search query.');
-      return;
-    }
+      // Get user's location and update map
+      this.getUserLocation()
+        .then(location => {
+          this.map.setCenter([location.longitude, location.latitude]);
+        })
+        .catch(() => {
+          console.log("Using default center: Melbourne");
+        });
+    },
 
-    let proximity = '144.9631,-37.8136'; // Default proximity to Melbourne
+    // Helper function to get user's location asynchronously
+    getUserLocation() {
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const { latitude, longitude } = position.coords;
+              resolve({ latitude, longitude });
+            },
+            error => {
+              reject(error);
+            }
+          );
+        } else {
+          reject(new Error('Geolocation not supported'));
+        }
+      });
+    },
 
-    try {
-      // Wait for the user's location or use default proximity
-      const location = await this.getUserLocation();
-      proximity = `${location.longitude},${location.latitude}`;
-    } catch (error) {
-      console.warn('Using default location (Melbourne) due to error:', error);
-    }
-
-    // Call Mapbox Geocoding API with the proximity parameter
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&limit=5`;
-
-    try {
-      const response = await axios.get(url);
-      const places = response.data.features;
-
-      // Clear existing markers on the map
-      document.querySelectorAll('.mapboxgl-marker').forEach(marker => marker.remove());
-
-      if (places.length === 0) {
-        alert('No places found for your search.');
+    // Search places near user's location or Melbourne
+    async searchPlaces() {
+      const query = this.searchQuery.trim(); // Get search input
+      if (!query) {
+        alert('Please enter a search query.');
         return;
       }
 
-      // Create a new bounds object to adjust the view later
-      const bounds = new mapboxgl.LngLatBounds();
+      let proximity = '144.9631,-37.8136'; // Default proximity to Melbourne
 
-      // Add new markers for the search results and extend the bounds
-      places.forEach(place => {
-        const [longitude, latitude] = place.geometry.coordinates;
+      try {
+        // Wait for the user's location or use default proximity
+        const location = await this.getUserLocation();
+        proximity = `${location.longitude},${location.latitude}`;
+      } catch (error) {
+        console.warn('Using default location (Melbourne) due to error:', error);
+      }
 
-        // Add marker to the map
-        new mapboxgl.Marker()
-          .setLngLat([longitude, latitude])
-          .setPopup(new mapboxgl.Popup().setHTML(`<h5>${place.text}</h5><p>${place.place_name}</p>`))
-          .addTo(this.map);
+      // Call Mapbox Geocoding API with the proximity parameter
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&limit=5`;
 
-        // Extend the bounds to include this marker's location
-        bounds.extend([longitude, latitude]);
-      });
+      try {
+        const response = await axios.get(url);
+        const places = response.data.features;
 
-      // Fit the map to the bounds of the markers
-      this.map.fitBounds(bounds, {
-        padding: 50,  // Add some padding to the bounds to avoid markers being on the edge
-      });
+        // Clear existing markers on the map
+        document.querySelectorAll('.mapboxgl-marker').forEach(marker => marker.remove());
 
-    } catch (error) {
-      console.error('Error searching places:', error);
-      alert('Error occurred while searching for places. Please try again later.');
-    }
-  },
+        if (places.length === 0) {
+          alert('No places found for your search.');
+          return;
+        }
+
+        // Create a new bounds object to adjust the view later
+        const bounds = new mapboxgl.LngLatBounds();
+
+        // Add new markers for the search results and extend the bounds
+        places.forEach(place => {
+          const [longitude, latitude] = place.geometry.coordinates;
+
+          // Add marker to the map
+          new mapboxgl.Marker()
+            .setLngLat([longitude, latitude])
+            .setPopup(new mapboxgl.Popup().setHTML(`<h5>${place.text}</h5><p>${place.place_name}</p>`))
+            .addTo(this.map);
+
+          // Extend the bounds to include this marker's location
+          bounds.extend([longitude, latitude]);
+        });
+
+        // Fit the map to the bounds of the markers
+        this.map.fitBounds(bounds, {
+          padding: 50,  // Add some padding to the bounds to avoid markers being on the edge
+        });
+
+      } catch (error) {
+        console.error('Error searching places:', error);
+        alert('Error occurred while searching for places. Please try again later.');
+      }
+    },
   },
   mounted() {
     this.initializeMap();

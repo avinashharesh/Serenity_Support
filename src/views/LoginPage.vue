@@ -105,11 +105,15 @@ export default {
 
           console.log("Firebase Login Successful");
 
+
+
           // Retrieve the user data from Firestore using the user's UID
           const userDocSnapshot = await getDoc(doc(db, "users", user.uid));
+          
 
           if (userDocSnapshot.exists()) {
             // Extract and store the user data in the variables
+            this.$store.dispatch('setCurrentUID', user.uid);
             const userData = userDocSnapshot.data();
             this.fullName = userData.fullName;
             this.username = userData.username;
@@ -122,6 +126,8 @@ export default {
 
             // Optionally, store user data in Vuex store (if you're using Vuex)
             this.$store.dispatch('registerUser', userData);
+            console.log("Current User:",this.$store.getters.getCurrentUser); // write the get current user here
+            console.log("Current User ID:",this.$store.getters.getCurrentUID);
 
             // Redirect to the home page after successful login
             this.$router.push({ name: 'Home' });

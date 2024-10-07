@@ -61,6 +61,12 @@
                     {{ sortOrder === 'asc' ? '▲' : '▼' }}
                   </span>
                 </th>
+                <th @click="sort('role')">
+                  Role
+                  <span v-if="sortKey === 'role'">
+                    {{ sortOrder === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -68,6 +74,7 @@
                 <td>{{ user.fullName }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td> <!-- New Role Column -->
               </tr>
             </tbody>
           </table>
@@ -100,10 +107,10 @@
     </div>
 
     <!-- Footer -->
-    
+    <FooterComponent />
   </div>
-  <FooterComponent />
 </template>
+
 <script>
 import { mapGetters } from 'vuex';
 import { collection, getDocs } from 'firebase/firestore';
@@ -171,7 +178,10 @@ export default {
     async fetchUsers() {
       const usersCollection = collection(db, 'users');  // Ensure the collection name is correct
       const usersSnapshot = await getDocs(usersCollection);
-      const usersList = usersSnapshot.docs.map(doc => doc.data());
+      const usersList = usersSnapshot.docs.map(doc => ({
+        ...doc.data(),
+        role: doc.data().role || 'user', // Fetch role or set default
+      }));
       this.users = usersList;
     },
     sort(key) {
@@ -205,12 +215,12 @@ export default {
     // Export as CSV
     exportToCSV() {
       const csvRows = [];
-      const headers = ['Full Name', 'Username', 'Email'];
+      const headers = ['Full Name', 'Username', 'Email', 'Role'];  // Add 'Role' to headers
       csvRows.push(headers.join(',')); // Add headers
 
       // Add user data
       this.users.forEach(user => {
-        const row = [user.fullName, user.username, user.email];
+        const row = [user.fullName, user.username, user.email, user.role];  // Add 'role'
         csvRows.push(row.join(','));
       });
 
@@ -238,6 +248,7 @@ export default {
       doc.text('Full Name', 10, y);
       doc.text('Username', 60, y);
       doc.text('Email', 110, y);
+      doc.text('Role', 160, y);  // Add 'Role' header
       y += 10;
 
       // Add user data
@@ -245,6 +256,7 @@ export default {
         doc.text(user.fullName, 10, y);
         doc.text(user.username, 60, y);
         doc.text(user.email, 110, y);
+        doc.text(user.role, 160, y);  // Add 'role' to PDF data
         y += 10;
       });
 

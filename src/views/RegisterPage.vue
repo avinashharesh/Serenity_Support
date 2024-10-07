@@ -190,6 +190,7 @@ export default {
             username: this.username,
             email: this.email,
             role: this.role === 'admin' ? 'admin' : 'non-admin',
+            bookings:[]
           };
 
         createUserWithEmailAndPassword(auth, this.email, this.password)
@@ -201,6 +202,7 @@ export default {
           // Redirect to login page after successful registration
           this.$router.push({ name: 'Home' });
           // Save user data in Firestore under 'users' collection
+          this.$store.dispatch('setCurrentUID', user.uid);
           setDoc(doc(db, "users", user.uid), userData); // 'user.uid' ensures each user gets their own document
         })
         .catch((error) => {
