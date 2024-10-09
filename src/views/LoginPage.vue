@@ -128,6 +128,7 @@ export default {
             this.$store.dispatch('registerUser', userData);
             console.log("Current User:",this.$store.getters.getCurrentUser); // write the get current user here
             console.log("Current User ID:",this.$store.getters.getCurrentUID);
+            console.log("Current bookings;",this.$store.getters.getCurrentUser.bookings);
 
             // Redirect to the home page after successful login
             this.$router.push({ name: 'Home' });

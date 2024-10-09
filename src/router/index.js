@@ -3,8 +3,8 @@ import HomePage from '@/views/HomePage.vue';
 import LoginPage from '@/views/LoginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
 import DashboardPage from '@/views/DashboardPage.vue';
-import ContactPage from '@/views/ContactPage.vue';
 import AppointmentPage from '@/views/AppointmentPage.vue';
+import SendEmail from '@/views/SendEmail.vue';
 
 const routes = [
   {
@@ -28,14 +28,14 @@ const routes = [
     component:DashboardPage,
   },
   {
-    path:'/contact',
-    name:'Contact',
-    component:ContactPage
-  },
-  {
     path:'/book-appointment',
     name:'Appointment',
     component:AppointmentPage
+  },
+  {
+    path:'/sendEmail',
+    name:'SendEmail',
+    component:SendEmail
   }
 
 ];

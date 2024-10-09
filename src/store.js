@@ -1,4 +1,3 @@
-import { setUserId } from 'firebase/analytics';
 import { createStore } from 'vuex';
 
 export default createStore({
@@ -37,6 +36,28 @@ export default createStore({
     // Set the logged-in state
     setLoggedIn(state, isLogged) {
       state.isLogged = isLogged;
+    },
+    
+    // Add a booking to the current user's bookings array
+    addBookingToCurrentUser(state, bookingDetails) {
+      const currentUser = state.currentUser;
+      
+      if (currentUser) {
+        // Ensure bookings array exists for the user
+        if (!currentUser.bookings) {
+          currentUser.bookings = [];
+        }
+        
+        // Add the booking to the current user's bookings
+        currentUser.bookings.push(bookingDetails);
+        
+        // Persist the change to localStorage
+        const userIndex = state.users.findIndex(user => user.username === currentUser.username);
+        if (userIndex !== -1) {
+          state.users[userIndex] = currentUser;
+          localStorage.setItem('users', JSON.stringify(state.users));
+        }
+      }
     }
   },
   actions: {
@@ -74,6 +95,11 @@ export default createStore({
       commit('setLoggedIn', false);  // Set isLogged to false when the user logs out
       commit('setCurrentUID', null);  // Clear the currentUID when the user logs out
     },
+    
+    // Action to add a booking for the current user
+    addBooking({ commit }, bookingDetails) {
+      commit('addBookingToCurrentUser', bookingDetails);  // Commit mutation to add the booking
+    }
   },
   getters: {
     // Get the list of all registered users
