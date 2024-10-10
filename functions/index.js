@@ -2,9 +2,13 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true }); // Import and configure CORS
 const sgMail = require('@sendgrid/mail');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();
+const genAI = new GoogleGenerativeAI(functions.config().gemini.apikey); // Store API key in Firebase config
+
 
 // Set your SendGrid API key (replace with your own API key)
 const SENDGRID_API_KEY = functions.config().sendgrid.key;
@@ -107,5 +111,36 @@ exports.sendEmailWithAttachment = functions.https.onRequest((req, res) => {
       }
       res.status(500).json({ error: 'Failed to send emails' });
     }
+  });
+});
+
+
+exports.askGenAI = functions.https.onRequest(async (req, res) => {
+  cors(req, res, async () => {
+    try {
+      const userQuestion = req.body.prompt; // Receive the prompt from the frontend
+
+      if (!userQuestion) {
+        return res.status(400).send({ error: "Prompt is required." });
+      }
+
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const result = await model.generateContent(userQuestion);
+
+      // Send back the AI-generated response
+      res.status(200).send({ response: result.response.text() });
+    } catch (error) {
+      console.error("Error with GenAI API:", error);
+      res.status(500).send({ error: "Internal Server Error." });
+    }
+  });
+});
+
+
+// Create a Cloud Function to return the Mapbox access token
+exports.getMapboxToken = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    const token = functions.config().mapbox.token; // Get the token from Firebase config
+    res.status(200).json({ token });
   });
 });
