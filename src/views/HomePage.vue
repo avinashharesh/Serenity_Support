@@ -10,10 +10,7 @@
         <div class="container">
           <h2>Supporting Mental Health for All</h2>
           <p>We provide resources, virtual support, and a community to help you manage your mental health.</p>
-          <!-- Conditionally render the button if the user is not logged in -->
           <router-link v-if="!isLoggedIn" to="/register" class="btn btn-primary mb-3">Join Us Today</router-link>
-
-          <!-- Conditionally render Book Appointment Button if the user is logged in -->
           <router-link v-if="isLoggedIn" to="/book-appointment" class="btn btn-outline-secondary">Book an Appointment</router-link>
         </div>
       </section>
@@ -42,8 +39,97 @@
         </div>
       </section>
 
-      <!-- Chatbot Section (Using GenAI) -->
-      <section class="chatbot-section container text-center mt-5">
+      <!-- What We Offer Section -->
+      <section class="offer-section container text-center mt-5">
+        <h3>What We Offer</h3>
+        <p class="lead">Our platform is designed to provide comprehensive mental health support, offering:</p>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="offer bg-light p-4 rounded mb-3">
+              <h4>Expert Guidance</h4>
+              <p>Connect with certified mental health professionals for personalized support and guidance.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="offer bg-light p-4 rounded mb-3">
+              <h4>Community Support</h4>
+              <p>Join a caring and supportive community where you can share experiences and find encouragement.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="offer bg-light p-4 rounded mb-3">
+              <h4>Self-Help Resources</h4>
+              <p>Access a wide range of self-help materials, including articles, videos, and exercises to enhance your well-being.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Articles Section -->
+      <section class="articles-section container mt-5" v-if="isLoggedIn">
+        <h3>Helpful Articles</h3>
+        <p class="lead text-center">Explore a range of articles focused on mental health support and well-being.</p>
+
+        <!-- Mental Health and Well-Being Articles -->
+        <h4>Mental Health and Well-Being Articles</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(07)61238-0/abstract" target="_blank">The Importance of Mental Health Awareness</a></h5>
+              <p>Understand why mental health awareness is crucial in today's world.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://japer.in/article/stress-anxiety-and-depression-in-clinical-practice-of-undergraduates-and-awareness-of-its-effective-management-a-survey" target="_blank">How to Manage Anxiety and Stress</a></h5>
+              <p>Practical tips for managing stress and anxiety from the Mayo Clinic.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://journals.sagepub.com/doi/abs/10.1177/1559827609335152" target="_blank">Building Emotional Resilience</a></h5>
+              <p>Learn how to develop emotional resilience to cope with life's challenges.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resources for Coping with Mental Health Challenges -->
+        <h4>Resources for Coping with Mental Health Challenges</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2524.2011.01014.x" target="_blank">Self-Care for Mental Health</a></h5>
+              <p>A guide on self-care practices to improve mental well-being.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://www.nejm.org/doi/abs/10.1056/NEJM200012283432607" target="_blank">Managing Depression</a></h5>
+              <p>Effective strategies to manage depression, from Healthline.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://spssi.onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-4560.2010.01662.x" target="_blank">Mental Health Support for Specific Groups</a></h5>
+              <p>Mental health strategies tailored to different populations, including vulnerable groups.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success Stories and Testimonials -->
+        <h4>Success Stories and Testimonials</h4>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="article-card bg-light p-4 rounded mb-3">
+              <h5><a href="https://journals.sagepub.com/doi/full/10.1177/10497323221118239" target="_blank">Real Stories of Mental Health Recovery</a></h5>
+              <p>Inspirational stories from individuals who have overcome mental health challenges.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chatbot Section -->
+      <section class="chatbot-section container text-center mt-5" v-if="isLoggedIn">
         <h3>Ask Us Anything</h3>
         <p>Get instant answers to your mental health-related questions.</p>
 
@@ -110,30 +196,22 @@
           </div>
         </div>
       </section>
-
-      <!-- Ratings Section -->
-      <section class="ratings text-center mt-5 bg-warning text-white py-4">
-        <div class="container">
-          <h3>What Our Users Say</h3>
-          <p>
-            Average Rating: <strong>{{ averageRating }}</strong>
-            <span v-html="renderStars(averageRating)"></span>
-          </p>
-        </div>
-      </section>
     </main>
 
     <!-- Footer Section -->
     <FooterComponent />
   </div>
 </template>
+
+
+
+
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl'; // Import Mapbox for map functionality
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
-import { GoogleGenerativeAI } from "@google/generative-ai"; // Import the Google Generative AI library
 
 
 export default {
@@ -175,25 +253,19 @@ export default {
     return;
   }
 
-  // Initialize the Google Generative AI client
-  const genAI = new GoogleGenerativeAI('AIzaSyAMEdveZNAbLtO5eogTRuvgp4jzhm41x94'); // Use your API key stored in environment variables
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Specify the model
-
-  // Set the user's question as the prompt for the AI
-  const prompt = this.userQuestion;
-
   // Set the loading state to true while waiting for the response
   this.loadingResponse = true;
   this.aiResponse = ''; // Clear previous responses
 
   try {
-    // Send the request to the Gemini API and get the response
-    const result = await model.generateContent(prompt);
+    // Make a request to the Firebase Cloud Function
+    const response = await axios.post('https://us-central1-assignment-cf13c.cloudfunctions.net/askGenAI', {
+      prompt: this.userQuestion, // Send the user's question as the prompt
+    });
 
     // Extract the AI-generated text from the response
-    this.aiResponse = result.response.text();
+    this.aiResponse = response.data.response;
   } catch (error) {
-    // Handle any errors that occur during the request
     console.error('Error generating response from GenAI:', error);
     this.aiResponse = 'An error occurred while fetching the response. Please try again later.';
   } finally {
@@ -203,46 +275,59 @@ export default {
 },
 
     // Initialize the Map with Mapbox and set default location to Melbourne
-    initializeMap() {
-      mapboxgl.accessToken = 'pk.eyJ1IjoiYXZpbmFzaGhhcmVzaCIsImEiOiJjbTF4ZjVuNXgweW85MmxxMTlqN256ZDJwIn0.z9SZkH3b1ogAluLnq3ettA'; // Replace with your Mapbox token
-      this.map = new mapboxgl.Map({
-        container: 'map', // HTML container id for the map
-        style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
-        center: [144.9631, -37.8136], // Default center: Melbourne
-        zoom: 12, // Initial zoom level
+    async initializeMap() {
+  try {
+    // Fetch the Mapbox token from the Firebase Cloud Function
+    const response = await axios.get('https://us-central1-assignment-cf13c.cloudfunctions.net/getMapboxToken');
+    const mapboxToken = response.data.token;
+
+    // Initialize Mapbox with the secure token
+    mapboxgl.accessToken = mapboxToken;
+    this.map = new mapboxgl.Map({
+      container: 'map', // HTML container id for the map
+      style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
+      center: [144.9631, -37.8136], // Default center: Melbourne
+      zoom: 12, // Initial zoom level
+    });
+
+    // Add zoom and rotation controls to the map
+    this.map.addControl(new mapboxgl.NavigationControl());
+
+    // Get user's current location if available, and set the map center
+    this.getUserLocation()
+      .then(location => {
+        this.map.setCenter([location.longitude, location.latitude]);
+      })
+      .catch(() => {
+        console.log('Using default center: Melbourne');
       });
-
-      // Add zoom and rotation controls to the map
-      this.map.addControl(new mapboxgl.NavigationControl());
-
-      // Get user's current location if available, and set the map center
-      this.getUserLocation()
-        .then(location => {
-          this.map.setCenter([location.longitude, location.latitude]);
-        })
-        .catch(() => {
-          console.log("Using default center: Melbourne");
-        });
-    },
+  } catch (error) {
+    console.error('Error fetching Mapbox token:', error);
+  }
+},
 
     // Helper function to get user's current location
     getUserLocation() {
-      return new Promise((resolve, reject) => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              const { latitude, longitude } = position.coords;
-              resolve({ latitude, longitude });
-            },
-            error => {
-              reject(error);
-            }
-          );
-        } else {
-          reject(new Error('Geolocation not supported by your browser.'));
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      // Use the browser's Geolocation API to get the user's current position
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          resolve({ latitude, longitude }); // Resolve with the user's location (latitude and longitude)
+        },
+        error => {
+          // Handle error if the user denies location access or there's a problem with geolocation
+          reject(new Error('Unable to retrieve your location. Please enable location services.'));
         }
-      });
-    },
+      );
+    } else {
+      // Reject the promise if Geolocation API is not supported by the browser
+      reject(new Error('Geolocation is not supported by your browser.'));
+    }
+  });
+}
+,
 
     // Search places near the user's location or Melbourne using Mapbox Geocoding API
     async searchPlaces() {
@@ -336,6 +421,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 /* General Layout and Spacing */
 .main-content {
@@ -387,6 +473,85 @@ export default {
 .feature p {
   font-size: 1rem;
   color: #555;
+}
+
+/* What We Offer Section Styling */
+.offer-section {
+  margin-top: 3rem;
+}
+
+.offer-section h3 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.offer-section p.lead {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.offer {
+  text-align: center;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1rem;
+}
+
+.offer h4 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.offer p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Articles Section Styling */
+.articles-section {
+  margin-top: 3rem;
+}
+
+.articles-section h3, .articles-section h4 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.articles-section p.lead {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.article-card {
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1rem;
+}
+
+.article-card h5 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-card p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.article-card a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.article-card a:hover {
+  text-decoration: underline;
 }
 
 /* Chatbot Section Styling */
@@ -532,24 +697,6 @@ export default {
   background-color: #218838;
 }
 
-/* Ratings Section Styling */
-.ratings {
-  margin-top: 3rem;
-  padding: 2rem 0;
-  background-color: #ffc107;
-  color: white;
-  border-radius: 10px;
-}
-
-.ratings h3 {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-}
-
-.ratings p {
-  font-size: 1.25rem;
-}
-
 /* Footer Section */
 footer {
   background-color: #f8f9fa;
@@ -568,12 +715,11 @@ footer {
     font-size: 1.25rem;
   }
 
-  .appointment-section h3,
-  .chatbot-section h3 {
-    font-size: 1.5rem;
-  }
-
-  .ratings h3 {
+  .offer-section h3,
+  .articles-section h3,
+  .articles-section h4,
+  .chatbot-section h3,
+  .appointment-section h3 {
     font-size: 1.5rem;
   }
 
@@ -594,5 +740,11 @@ footer {
     margin-right: 0;
     margin-bottom: 1rem;
   }
+
+  .offer,
+  .article-card {
+    text-align: center;
+  }
 }
+
 </style>
