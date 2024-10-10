@@ -68,11 +68,13 @@
     <FooterComponent />
   </footer>
 </template>
+
 <script>
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
 import { db } from '@/firebaseConfig';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import axios from 'axios';
 
 // FullCalendar imports
 import { Calendar } from '@fullcalendar/core';
@@ -98,15 +100,49 @@ export default {
         { id: 2, name: 'Dr. John Smith', specialty: 'Psychologist' },
         { id: 3, name: 'Dr. Sarah Lee', specialty: 'Counselor' },
       ],
+      users: [], // To store fetched users and their bookings
     };
   },
   methods: {
+    // Fetch all users and their bookings from Firestore
+    async fetchUsers() {
+      try {
+        const response = await axios.get('https://us-central1-assignment-cf13c.cloudfunctions.net/getUsers');
+        this.users = response.data;
+        console.log('Fetched users:', this.users);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
+
+    // Check if the selected professional is already booked for the chosen date and time
+    isProfessionalAvailable(professional, date, time) {
+      for (const user of this.users) {
+        if (user.bookings) {
+          for (const booking of user.bookings) {
+            if (booking.professional === professional && booking.date === date && booking.time === time) {
+              return false; // Professional is already booked for this slot
+            }
+          }
+        }
+      }
+      return true; // Professional is available
+    },
+
+    // Submit the appointment form
     async submitForm() {
       try {
         const currentUID = this.$store.getters.getCurrentUID; // Get the current UID from Vuex
 
         if (!currentUID) {
           throw new Error('No user is currently logged in');
+        }
+
+        // First, check if the professional is available for the selected date and time
+        const isAvailable = this.isProfessionalAvailable(this.form.professional, this.form.date, this.form.time);
+        if (!isAvailable) {
+          alert('The selected professional is already booked at the chosen date and time. Please select another slot.');
+          return;
         }
 
         // Prepare booking details
@@ -164,10 +200,12 @@ export default {
     }
   },
   mounted() {
+    this.fetchUsers();        // Fetch users and their bookings from Firestore on component mount
     this.initializeCalendar();  // Call the method when the component mounts
   }
 };
 </script>
+
 <style scoped>
 /* Centering the main content and limiting its width */
 .main-content {
