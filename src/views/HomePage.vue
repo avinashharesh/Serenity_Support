@@ -1,5 +1,10 @@
 <template>
   <div class="home-page">
+    <!-- Online/Offline Status Banner -->
+    <div v-if="!isOnline" class="offline-banner">
+      <p>You are currently offline. Some features may be unavailable.</p>
+    </div>
+
     <!-- Header Section -->
     <HeaderComponent />
 
@@ -202,17 +207,12 @@
     <FooterComponent />
   </div>
 </template>
-
-
-
-
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl'; // Import Mapbox for map functionality
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from '@/components/FooterComponent.vue';
-
 
 export default {
   name: "HomePage",
@@ -222,6 +222,7 @@ export default {
   },
   data() {
     return {
+      isOnline: navigator.onLine, // Initial online status
       searchQuery: '', // For place search input
       startLocation: '', // For starting point in the directions
       endLocation: '', // For end point in the directions
@@ -234,100 +235,107 @@ export default {
   computed: {
     ...mapGetters(['averageRating', 'isLoggedIn']),
   },
+  mounted() {
+    // Add event listeners for online/offline status
+    window.addEventListener('online', this.updateOnlineStatus);
+    window.addEventListener('offline', this.updateOnlineStatus);
+
+    // Initialize the map when the component is mounted
+    this.initializeMap();
+  },
+  beforeDestroy() {
+    // Remove event listeners before destroying the component
+    window.removeEventListener('online', this.updateOnlineStatus);
+    window.removeEventListener('offline', this.updateOnlineStatus);
+  },
   methods: {
-    // Generate star ratings
-    renderStars(rating) {
-      const fullStars = Math.floor(rating);
-      const halfStar = rating % 1 !== 0;
-      const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-      return (
-        '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars)
-      );
+    // Update the online status when it changes
+    updateOnlineStatus() {
+      this.isOnline = navigator.onLine;
     },
 
     // GenAI API Integration: Ask question to GenAI (Gemini API)
     async askGenAI() {
-  // Check if the user entered a question
-  if (!this.userQuestion.trim()) {
-    alert('Please enter a question.');
-    return;
-  }
+      // Check if the user entered a question
+      if (!this.userQuestion.trim()) {
+        alert('Please enter a question.');
+        return;
+      }
 
-  // Set the loading state to true while waiting for the response
-  this.loadingResponse = true;
-  this.aiResponse = ''; // Clear previous responses
+      // Set the loading state to true while waiting for the response
+      this.loadingResponse = true;
+      this.aiResponse = ''; // Clear previous responses
 
-  try {
-    // Make a request to the Firebase Cloud Function
-    const response = await axios.post('https://us-central1-assignment-cf13c.cloudfunctions.net/askGenAI', {
-      prompt: this.userQuestion, // Send the user's question as the prompt
-    });
+      try {
+        // Make a request to the Firebase Cloud Function
+        const response = await axios.post('https://us-central1-assignment-cf13c.cloudfunctions.net/askGenAI', {
+          prompt: this.userQuestion, // Send the user's question as the prompt
+        });
 
-    // Extract the AI-generated text from the response
-    this.aiResponse = response.data.response;
-  } catch (error) {
-    console.error('Error generating response from GenAI:', error);
-    this.aiResponse = 'An error occurred while fetching the response. Please try again later.';
-  } finally {
-    // Turn off the loading state
-    this.loadingResponse = false;
-  }
-},
+        // Extract the AI-generated text from the response
+        this.aiResponse = response.data.response;
+      } catch (error) {
+        console.error('Error generating response from GenAI:', error);
+        this.aiResponse = 'An error occurred while fetching the response. Please try again later.';
+      } finally {
+        // Turn off the loading state
+        this.loadingResponse = false;
+      }
+    },
 
     // Initialize the Map with Mapbox and set default location to Melbourne
     async initializeMap() {
-  try {
-    // Fetch the Mapbox token from the Firebase Cloud Function
-    const response = await axios.get('https://us-central1-assignment-cf13c.cloudfunctions.net/getMapboxToken');
-    const mapboxToken = response.data.token;
+      try {
+        // Fetch the Mapbox token from the Firebase Cloud Function
+        const response = await axios.get('https://us-central1-assignment-cf13c.cloudfunctions.net/getMapboxToken');
+        const mapboxToken = response.data.token;
 
-    // Initialize Mapbox with the secure token
-    mapboxgl.accessToken = mapboxToken;
-    this.map = new mapboxgl.Map({
-      container: 'map', // HTML container id for the map
-      style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
-      center: [144.9631, -37.8136], // Default center: Melbourne
-      zoom: 12, // Initial zoom level
-    });
+        // Initialize Mapbox with the secure token
+        mapboxgl.accessToken = mapboxToken;
+        this.map = new mapboxgl.Map({
+          container: 'map', // HTML container id for the map
+          style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
+          center: [144.9631, -37.8136], // Default center: Melbourne
+          zoom: 12, // Initial zoom level
+        });
 
-    // Add zoom and rotation controls to the map
-    this.map.addControl(new mapboxgl.NavigationControl());
+        // Add zoom and rotation controls to the map
+        this.map.addControl(new mapboxgl.NavigationControl());
 
-    // Get user's current location if available, and set the map center
-    this.getUserLocation()
-      .then(location => {
-        this.map.setCenter([location.longitude, location.latitude]);
-      })
-      .catch(() => {
-        console.log('Using default center: Melbourne');
-      });
-  } catch (error) {
-    console.error('Error fetching Mapbox token:', error);
-  }
-},
+        // Get user's current location if available, and set the map center
+        this.getUserLocation()
+          .then(location => {
+            this.map.setCenter([location.longitude, location.latitude]);
+          })
+          .catch(() => {
+            console.log('Using default center: Melbourne');
+          });
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+      }
+    },
 
     // Helper function to get user's current location
     getUserLocation() {
-  return new Promise((resolve, reject) => {
-    if (navigator.geolocation) {
-      // Use the browser's Geolocation API to get the user's current position
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const { latitude, longitude } = position.coords;
-          resolve({ latitude, longitude }); // Resolve with the user's location (latitude and longitude)
-        },
-        error => {
-          // Handle error if the user denies location access or there's a problem with geolocation
-          reject(new Error('Unable to retrieve your location. Please enable location services.'));
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          // Use the browser's Geolocation API to get the user's current position
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const { latitude, longitude } = position.coords;
+              resolve({ latitude, longitude }); // Resolve with the user's location (latitude and longitude)
+            },
+            error => {
+              // Handle error if the user denies location access or there's a problem with geolocation
+              reject(new Error('Unable to retrieve your location. Please enable location services.'));
+            }
+          );
+        } else {
+          // Reject the promise if Geolocation API is not supported by the browser
+          reject(new Error('Geolocation is not supported by your browser.'));
         }
-      );
-    } else {
-      // Reject the promise if Geolocation API is not supported by the browser
-      reject(new Error('Geolocation is not supported by your browser.'));
-    }
-  });
-}
-,
+      });
+    },
 
     // Search places near the user's location or Melbourne using Mapbox Geocoding API
     async searchPlaces() {
@@ -414,18 +422,24 @@ export default {
         alert('Failed to retrieve directions. Please try again.');
       }
     },
-  },
-  mounted() {
-    // Initialize the map when the component is mounted
-    this.initializeMap();
-  },
+  }
 };
 </script>
-
 <style scoped>
 /* General Layout and Spacing */
 .main-content {
   padding: 2rem;
+}
+
+/* Offline Status Banner */
+.offline-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  margin-bottom: 1rem;
 }
 
 /* Hero Section Styling */
@@ -746,5 +760,4 @@ footer {
     text-align: center;
   }
 }
-
 </style>
