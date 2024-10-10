@@ -179,39 +179,42 @@ export default {
           : "Passwords do not match.";
     },
     register() {
-      this.validateUsername();
-      this.validateEmail();
-      this.validatePassword();
-      this.validateConfirmPassword();
+  this.validateUsername();
+  this.validateEmail();
+  this.validatePassword();
+  this.validateConfirmPassword();
 
-      if (this.formValid) {
-        const userData = {
-            fullName: this.fullName,
-            username: this.username,
-            email: this.email,
-            role: this.role === 'admin' ? 'admin' : 'non-admin',
-            bookings:[]
-          };
+  if (this.formValid) {
+    const userData = {
+      fullName: this.fullName,
+      username: this.username,
+      email: this.email,
+      role: this.role === 'admin' ? 'admin' : 'non-admin',
+      bookings: [],
+    };
 
-        createUserWithEmailAndPassword(auth, this.email, this.password)
-        .then((data) => {
-          const user=data.user
-          console.log("Firebase Register Successful!");
-          alert("Registered Successfully");
-          this.$store.dispatch('registerUser', userData);
-          // Redirect to login page after successful registration
-          this.$router.push({ name: 'Home' });
-          // Save user data in Firestore under 'users' collection
-          this.$store.dispatch('setCurrentUID', user.uid);
-          setDoc(doc(db, "users", user.uid), userData); // 'user.uid' ensures each user gets their own document
-        })
-        .catch((error) => {
-          console.log(error.code);
-        });
-        // alert("Registered Successfully");
-        // this.$router.push({ name: 'Home' });
-      }
-    }
+    createUserWithEmailAndPassword(auth, this.email, this.password)
+      .then((data) => {
+        const user = data.user;
+        console.log("Firebase Register Successful!");
+        alert("Registered Successfully");
+        this.$store.dispatch('registerUser', userData);
+        this.$router.push({ name: 'Home' });
+        // Save user data in Firestore
+        this.$store.dispatch('setCurrentUID', user.uid);
+        setDoc(doc(db, "users", user.uid), userData);
+      })
+      .catch((error) => {
+        // Handle specific Firebase error codes
+        if (error.code === 'auth/email-already-in-use') {
+          this.emailError = 'This email is already registered. Please use a different one.';
+        } else {
+          console.log(error.code); // Log other errors
+        }
+      });
+  }
+}
+
   },
 };
 </script>
