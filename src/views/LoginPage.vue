@@ -54,96 +54,89 @@
 </template>
 
 <script>
-import HeaderComponent from '@/components/HeaderComponent.vue';
-import FooterComponent from '@/components/FooterComponent.vue';
-import { auth, db } from '@/firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import HeaderComponent from '@/components/HeaderComponent.vue'
+import FooterComponent from '@/components/FooterComponent.vue'
+import { auth, db } from '@/firebaseConfig'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 
 export default {
-  name: "LoginPage",
+  name: 'LoginPage',
   components: {
-    HeaderComponent,  // Register HeaderComponent
-    FooterComponent,  // Register FooterComponent
+    HeaderComponent, // Register HeaderComponent
+    FooterComponent // Register FooterComponent
   },
   data() {
     return {
-      email: "",
-      password: "",
-      fullName: "",
-      username: "",
-      role: "",
+      email: '',
+      password: '',
+      fullName: '',
+      username: '',
+      role: '',
       emailError: null,
       passwordError: null,
-      loginError: null,  // To display login errors
-    };
+      loginError: null // To display login errors
+    }
   },
   computed: {
     formValid() {
-      return this.email && this.password && !this.emailError && !this.passwordError;
-    },
+      return this.email && this.password && !this.emailError && !this.passwordError
+    }
   },
   methods: {
     validateEmail() {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailError = emailPattern.test(this.email)
-        ? null
-        : "Please enter a valid email address.";
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      this.emailError = emailPattern.test(this.email) ? null : 'Please enter a valid email address.'
     },
     validatePassword() {
       this.passwordError =
-        this.password.length >= 6
-          ? null
-          : "Password must be at least 6 characters long.";
+        this.password.length >= 6 ? null : 'Password must be at least 6 characters long.'
     },
     async login() {
       if (this.formValid) {
         try {
           // Sign in with email and password
-          const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
-          const user = userCredential.user;
+          const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password)
+          const user = userCredential.user
 
-          console.log("Firebase Login Successful");
-
-
+          console.log('Firebase Login Successful')
 
           // Retrieve the user data from Firestore using the user's UID
-          const userDocSnapshot = await getDoc(doc(db, "users", user.uid));
-          
+          const userDocSnapshot = await getDoc(doc(db, 'users', user.uid))
 
           if (userDocSnapshot.exists()) {
             // Extract and store the user data in the variables
-            this.$store.dispatch('setCurrentUID', user.uid);
-            const userData = userDocSnapshot.data();
-            this.fullName = userData.fullName;
-            this.username = userData.username;
-            this.email = userData.email;
-            this.role = userData.role;
+            this.$store.dispatch('setCurrentUID', user.uid)
+            const userData = userDocSnapshot.data()
+            this.fullName = userData.fullName
+            this.username = userData.username
+            this.email = userData.email
+            this.role = userData.role
 
-            console.log("User data retrieved from Firestore:", userData);
+            console.log('User data retrieved from Firestore:', userData)
 
-            alert("Logged in successfully");
+            alert('Logged in successfully')
 
             // Optionally, store user data in Vuex store (if you're using Vuex)
-            this.$store.dispatch('registerUser', userData);
-            console.log("Current User:",this.$store.getters.getCurrentUser); // write the get current user here
-            console.log("Current User ID:",this.$store.getters.getCurrentUID);
-            console.log("Current bookings;",this.$store.getters.getCurrentUser.bookings);
+            this.$store.dispatch('registerUser', userData)
+            console.log('Current User:', this.$store.getters.getCurrentUser) // write the get current user here
+            console.log('Current User ID:', this.$store.getters.getCurrentUID)
+            console.log('Current bookings;', this.$store.getters.getCurrentUser.bookings)
 
             // Redirect to the home page after successful login
-            this.$router.push({ name: 'Home' });
+            this.$router.push({ name: 'Home' })
           } else {
-            console.log("No user data found in Firestore.");
-            this.loginError = "User profile not found.";
+            console.log('No user data found in Firestore.')
+            this.loginError = 'User profile not found.'
           }
         } catch (error) {
-          console.error("Error during login:", error);
-          this.loginError = "Login failed. Please check your credentials.";
+          console.error('Error during login:', error)
+          this.loginError = 'Login failed. Please check your credentials.'
         }
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style scoped>

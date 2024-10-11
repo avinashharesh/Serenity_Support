@@ -6,30 +6,63 @@
     <!-- Dashboard Content Section -->
     <div class="container mt-5">
       <h2 class="text-center mb-4">Welcome, {{ user.fullName }}!</h2>
-      <p class="text-center mb-4">You are logged in as: <strong>{{ user.role }}</strong></p>
+      <p class="text-center mb-4">
+        You are logged in as: <strong>{{ user.role }}</strong>
+      </p>
 
       <div v-if="user.role === 'admin'">
         <!-- Admin Dashboard for Admin Users -->
         <h3>Admin Dashboard</h3>
         <p>Here is the list of all users:</p>
 
+        <!-- Admin User Table with Search Inputs -->
+        <div class="search-container">
+          <input
+            v-model="userFilters.fullName"
+            placeholder="Search by Full Name"
+            class="form-control mb-2"
+          />
+          <input
+            v-model="userFilters.email"
+            placeholder="Search by Email"
+            class="form-control mb-2"
+          />
+          <input
+            v-model="userFilters.role"
+            placeholder="Search by Role"
+            class="form-control mb-2"
+          />
+        </div>
+
         <!-- Admin User Table -->
         <table class="table table-striped">
           <thead>
             <tr>
-              <th @click="sortUsers('fullName')">Full Name
-                <span v-if="userSortKey === 'fullName'">{{ userSortOrder === 'asc' ? '▲' : '▼' }}</span>
+              <th @click="sortUsers('fullName')">
+                Full Name
+                <span v-if="userSortKey === 'fullName'">{{
+                  userSortOrder === 'asc' ? '▲' : '▼'
+                }}</span>
               </th>
-              <th @click="sortUsers('email')">Email
-                <span v-if="userSortKey === 'email'">{{ userSortOrder === 'asc' ? '▲' : '▼' }}</span>
+              <th @click="sortUsers('email')">
+                Email
+                <span v-if="userSortKey === 'email'">{{
+                  userSortOrder === 'asc' ? '▲' : '▼'
+                }}</span>
               </th>
-              <th @click="sortUsers('role')">Role
+              <th @click="sortUsers('role')">
+                Role
                 <span v-if="userSortKey === 'role'">{{ userSortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in paginatedUsers" :key="user.email">
+            <tr
+              v-for="user in paginatedUsers"
+              :key="user.email"
+              @click="fetchUserDetails(user.email)"
+              class="clickable-row"
+            >
               <td>{{ user.fullName }}</td>
               <td>{{ user.email }}</td>
               <td>{{ user.role }}</td>
@@ -41,7 +74,8 @@
         <div class="export-buttons mt-3">
           <button @click="exportToCSV" class="btn btn-secondary">Export as CSV</button>
           <button @click="exportToPDF" class="btn btn-secondary">Export as PDF</button>
-          <button @click="goToSendEmailPage" class="btn btn-primary">Send Email</button> <!-- New Send Email button -->
+          <button @click="goToSendEmailPage" class="btn btn-primary">Send Email</button>
+          <!-- New Send Email button -->
         </div>
 
         <!-- Pagination Controls for Users -->
@@ -51,9 +85,33 @@
           <button @click="nextUserPage" :disabled="userCurrentPage === userTotalPages">Next</button>
         </div>
 
+        <!-- Selected User's Booking List -->
+        <div v-if="selectedUserBookings.length" class="mt-5">
+          <h4>Bookings for {{ selectedUserDetails.fullName }}:</h4>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Professional</th>
+                <th>Date</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="booking in selectedUserBookings" :key="booking.date + booking.time">
+                <td>{{ booking.professional }}</td>
+                <td>{{ booking.date }}</td>
+                <td>{{ booking.time }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <!-- Bar Chart for Booking Comparison -->
         <div class="chart-container mt-5">
           <canvas id="bookingChart" width="400" height="200"></canvas>
+        </div>
+        <div class="delete-account mt-3">
+          <button @click="confirmDeleteAccount" class="btn btn-danger">Delete Account</button>
         </div>
       </div>
 
@@ -64,22 +122,37 @@
 
         <!-- Search Fields for Bookings -->
         <div class="search-container">
-          <input v-model="filters.professional" placeholder="Search by Professional" class="form-control mb-2" />
-          <input v-model="filters.date" placeholder="Search by Date (YYYY-MM-DD)" class="form-control mb-2" />
-          <input v-model="filters.time" placeholder="Search by Time (HH:MM:SS)" class="form-control mb-2" />
+          <input
+            v-model="filters.professional"
+            placeholder="Search by Professional"
+            class="form-control mb-2"
+          />
+          <input
+            v-model="filters.date"
+            placeholder="Search by Date (YYYY-MM-DD)"
+            class="form-control mb-2"
+          />
+          <input
+            v-model="filters.time"
+            placeholder="Search by Time (HH:MM:SS)"
+            class="form-control mb-2"
+          />
         </div>
 
         <!-- Bookings Table -->
         <table class="table table-striped">
           <thead>
             <tr>
-              <th @click="sort('professional')">Professional
+              <th @click="sort('professional')">
+                Professional
                 <span v-if="sortKey === 'professional'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <th @click="sort('date')">Date
+              <th @click="sort('date')">
+                Date
                 <span v-if="sortKey === 'date'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <th @click="sort('time')">Time
+              <th @click="sort('time')">
+                Time
                 <span v-if="sortKey === 'time'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
             </tr>
@@ -99,6 +172,11 @@
           <span>Page {{ currentPage }} of {{ totalPages }}</span>
           <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
         </div>
+
+        <!-- Delete Account Button -->
+        <div class="delete-account mt-3">
+          <button @click="confirmDeleteAccount" class="btn btn-danger">Delete Account</button>
+        </div>
       </div>
     </div>
 
@@ -108,20 +186,20 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import HeaderComponent from '@/components/HeaderComponent.vue';
-import FooterComponent from '@/components/FooterComponent.vue';
-import axios from 'axios'; 
-import { jsPDF } from 'jspdf';
-import { Chart, registerables } from 'chart.js'; // Import Chart.js
+import { mapGetters } from 'vuex'
+import HeaderComponent from '@/components/HeaderComponent.vue'
+import FooterComponent from '@/components/FooterComponent.vue'
+import axios from 'axios'
+import { jsPDF } from 'jspdf'
+import { Chart, registerables } from 'chart.js'
 
-Chart.register(...registerables); // Register Chart.js components
+Chart.register(...registerables)
 
 export default {
-  name: "DashboardPage",
+  name: 'DashboardPage',
   components: {
     HeaderComponent,
-    FooterComponent,
+    FooterComponent
   },
   data() {
     return {
@@ -141,116 +219,149 @@ export default {
       userSortOrder: 'asc',
       userCurrentPage: 1,
       userPerPage: 10,
+      userFilters: {
+        fullName: '',
+        email: '',
+        role: ''
+      },
 
-      // Chart related
-      chart: null, // For holding the chart instance
-    };
+      selectedUserDetails: null,
+      selectedUserBookings: [],
+      chart: null
+    }
   },
   computed: {
-    ...mapGetters(['getCurrentUser']),
+    ...mapGetters(['getCurrentUser', 'getCurrentUserID']),
     user() {
-      return this.getCurrentUser || {};
+      return this.getCurrentUser || {}
+    },
+    userID() {
+      return this.getCurrentUserID || {}
     },
     bookings() {
-      return this.user.bookings || [];
+      return this.user.bookings || []
     },
     filteredBookings() {
-      return this.bookings.filter(booking => {
+      return this.bookings.filter((booking) => {
         return (
           booking.professional.toLowerCase().includes(this.filters.professional.toLowerCase()) &&
           booking.date.includes(this.filters.date) &&
           booking.time.includes(this.filters.time)
-        );
-      });
+        )
+      })
     },
     sortedBookings() {
       return this.filteredBookings.sort((a, b) => {
-        let modifier = this.sortOrder === 'asc' ? 1 : -1;
+        let modifier = this.sortOrder === 'asc' ? 1 : -1
 
-        if (a[this.sortKey] < b[this.sortKey]) return -1 * modifier;
-        if (a[this.sortKey] > b[this.sortKey]) return 1 * modifier;
+        if (a[this.sortKey] < b[this.sortKey]) return -1 * modifier
+        if (a[this.sortKey] > b[this.sortKey]) return 1 * modifier
 
         if (this.sortKey === 'date') {
-          if (a.time < b.time) return -1 * modifier;
-          if (a.time > b.time) return 1 * modifier;
+          if (a.time < b.time) return -1 * modifier
+          if (a.time > b.time) return 1 * modifier
         }
 
-        return 0;
-      });
+        return 0
+      })
     },
     paginatedBookings() {
-      let bookings = this.sortedBookings || []; 
-      let start = (this.currentPage - 1) * this.perPage;
-      let end = start + this.perPage;
-      return bookings.slice(start, end);
+      let bookings = this.sortedBookings || []
+      let start = (this.currentPage - 1) * this.perPage
+      let end = start + this.perPage
+      return bookings.slice(start, end)
     },
     totalPages() {
-      return Math.ceil((this.bookings || []).length / this.perPage); 
+      return Math.ceil((this.bookings || []).length / this.perPage)
     },
 
     // Admin section for users
+    filteredUsers() {
+      return (this.users || []).filter((user) => {
+        return (
+          user.fullName.toLowerCase().includes(this.userFilters.fullName.toLowerCase()) &&
+          user.email.toLowerCase().includes(this.userFilters.email.toLowerCase()) &&
+          user.role.toLowerCase().includes(this.userFilters.role.toLowerCase())
+        )
+      })
+    },
     sortedUsers() {
-      return (this.users || []).sort((a, b) => {
-        let modifier = this.userSortOrder === 'asc' ? 1 : -1;
-        if (a[this.userSortKey] < b[this.userSortKey]) return -1 * modifier;
-        if (a[this.userSortKey] > b[this.userSortKey]) return 1 * modifier;
-        return 0;
-      });
+      return this.filteredUsers.sort((a, b) => {
+        let modifier = this.userSortOrder === 'asc' ? 1 : -1
+        if (a[this.userSortKey] < b[this.userSortKey]) return -1 * modifier
+        if (a[this.userSortKey] > b[this.userSortKey]) return 1 * modifier
+        return 0
+      })
     },
     paginatedUsers() {
-      let users = this.sortedUsers || []; 
-      let start = (this.userCurrentPage - 1) * this.userPerPage;
-      let end = start + this.userPerPage;
-      return users.slice(start, end);
+      let users = this.sortedUsers || []
+      let start = (this.userCurrentPage - 1) * this.userPerPage
+      let end = start + this.userPerPage
+      return users.slice(start, end)
     },
     userTotalPages() {
-      return Math.ceil((this.users || []).length / this.userPerPage); 
+      return Math.ceil((this.users || []).length / this.userPerPage)
     }
   },
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get('https://us-central1-assignment-cf13c.cloudfunctions.net/getUsers'); 
-        this.users = response.data; 
-        this.generateChart(); // Call this after fetching users
-        console.log("Fetched users:", this.users);
+        const response = await axios.get(
+          'https://us-central1-assignment-cf13c.cloudfunctions.net/getUsers'
+        )
+        this.users = response.data
+        this.generateChart()
+        console.log('Fetched users:', this.users)
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error)
+      }
+    },
+    async fetchUserDetails(email) {
+      try {
+        const response = await axios.get(
+          `https://us-central1-assignment-cf13c.cloudfunctions.net/getUserByEmail?email=${email}`
+        )
+        this.selectedUserDetails = response.data
+        this.selectedUserBookings = response.data.bookings || []
+      } catch (error) {
+        console.error('Error fetching user details:', error)
       }
     },
     generateChart() {
       if (this.chart) {
-        this.chart.destroy(); // Destroy existing chart instance before creating a new one
+        this.chart.destroy()
       }
 
-      const professionalBookingCounts = {};
-      this.users.forEach(user => {
+      const professionalBookingCounts = {}
+      this.users.forEach((user) => {
         if (user.bookings) {
-          user.bookings.forEach(booking => {
+          user.bookings.forEach((booking) => {
             if (professionalBookingCounts[booking.professional]) {
-              professionalBookingCounts[booking.professional]++;
+              professionalBookingCounts[booking.professional]++
             } else {
-              professionalBookingCounts[booking.professional] = 1;
+              professionalBookingCounts[booking.professional] = 1
             }
-          });
+          })
         }
-      });
+      })
 
-      const labels = Object.keys(professionalBookingCounts);
-      const data = Object.values(professionalBookingCounts);
+      const labels = Object.keys(professionalBookingCounts)
+      const data = Object.values(professionalBookingCounts)
 
-      const ctx = document.getElementById('bookingChart').getContext('2d');
+      const ctx = document.getElementById('bookingChart').getContext('2d')
       this.chart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: labels,
-          datasets: [{
-            label: 'Bookings per Professional',
-            data: data,
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
+          datasets: [
+            {
+              label: 'Bookings per Professional',
+              data: data,
+              backgroundColor: 'rgba(54, 162, 235, 0.6)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }
+          ]
         },
         options: {
           scales: {
@@ -259,97 +370,116 @@ export default {
             }
           }
         }
-      });
+      })
     },
     sort(key) {
       if (this.sortKey === key) {
-        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
       } else {
-        this.sortKey = key;
-        this.sortOrder = 'desc';
+        this.sortKey = key
+        this.sortOrder = 'desc'
       }
     },
     prevPage() {
       if (this.currentPage > 1) {
-        this.currentPage--;
+        this.currentPage--
       }
     },
     nextPage() {
       if (this.currentPage < this.totalPages) {
-        this.currentPage++;
+        this.currentPage++
       }
     },
     sortUsers(key) {
       if (this.userSortKey === key) {
-        this.userSortOrder = this.userSortOrder === 'asc' ? 'desc' : 'asc';
+        this.userSortOrder = this.userSortOrder === 'asc' ? 'desc' : 'asc'
       } else {
-        this.userSortKey = key;
-        this.userSortOrder = 'asc';
+        this.userSortKey = key
+        this.userSortOrder = 'asc'
       }
     },
     prevUserPage() {
       if (this.userCurrentPage > 1) {
-        this.userCurrentPage--;
+        this.userCurrentPage--
       }
     },
     nextUserPage() {
       if (this.userCurrentPage < this.userTotalPages) {
-        this.userCurrentPage++;
+        this.userCurrentPage++
       }
     },
     goToSendEmailPage() {
-    this.$router.push('/sendEmail');
-  }
-  ,
+      this.$router.push('/sendEmail')
+    },
     exportToCSV() {
-      const csvRows = [];
-      const headers = ['Full Name', 'Email', 'Role']; 
-      csvRows.push(headers.join(',')); 
+      const csvRows = []
+      const headers = ['Full Name', 'Email', 'Role']
+      csvRows.push(headers.join(','))
+      ;(this.users || []).forEach((user) => {
+        const row = [user.fullName, user.email, user.role]
+        csvRows.push(row.join(','))
+      })
 
-      (this.users || []).forEach(user => {
-        const row = [user.fullName, user.email, user.role];
-        csvRows.push(row.join(','));
-      });
-
-      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.setAttribute('hidden', '');
-      a.setAttribute('href', url);
-      a.setAttribute('download', 'users.csv');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.setAttribute('hidden', '')
+      a.setAttribute('href', url)
+      a.setAttribute('download', 'users.csv')
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
     },
     exportToPDF() {
-      const doc = new jsPDF();
-      let y = 10;
-      doc.setFontSize(16);
-      doc.text('User Management Report', 10, y);
-      doc.setFontSize(12);
-      y += 10;
+      const doc = new jsPDF()
+      let y = 10
+      doc.setFontSize(16)
+      doc.text('User Management Report', 10, y)
+      doc.setFontSize(12)
+      y += 10
 
-      doc.text('Full Name', 10, y);
-      doc.text('Email', 60, y);
-      doc.text('Role', 120, y);
-      y += 10;
+      doc.text('Full Name', 10, y)
+      doc.text('Email', 60, y)
+      doc.text('Role', 120, y)
+      y += 10
+      ;(this.users || []).forEach((user) => {
+        doc.text(user.fullName, 10, y)
+        doc.text(user.email, 60, y)
+        doc.text(user.role, 120, y)
+        y += 10
+      })
 
-      (this.users || []).forEach(user => {
-        doc.text(user.fullName, 10, y);
-        doc.text(user.email, 60, y);
-        doc.text(user.role, 120, y);
-        y += 10;
-      });
-
-      doc.save('users.pdf');
+      doc.save('users.pdf')
+    },
+    confirmDeleteAccount() {
+      // Confirm before deletion
+      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        this.deleteAccount()
+      }
+    },
+    async deleteAccount() {
+      try {
+        const response = await axios.delete(
+          `https://us-central1-assignment-cf13c.cloudfunctions.net/deleteUserByID?userID=${this.userID}`
+        )
+        if (response.status === 200) {
+          alert('Your account has been successfully deleted.')
+          this.$store.dispatch('setCurrentUID', null)
+          this.$store.dispatch('logoutUser')
+          this.$router.push('/')
+        }
+      } catch (error) {
+        console.error('Error deleting account:', error)
+        alert('An error occurred while deleting your account. Please try again later.')
+      }
     }
   },
   mounted() {
     if (this.user.role === 'admin') {
-      this.fetchUsers();
+      this.fetchUsers()
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -388,10 +518,19 @@ th:hover {
   background-color: #e9ecef;
 }
 
-th, td {
+th,
+td {
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: #f1f1f1;
 }
 
 .search-container input {

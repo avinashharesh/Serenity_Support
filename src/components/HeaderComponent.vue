@@ -17,16 +17,16 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <!-- Display online/offline status -->
           <li class="nav-item">
             <span class="nav-link">
-              Status: <span :class="isOnline ? 'text-success' : 'text-danger'">{{ isOnline ? 'Online 🟢' : 'Offline 🔴' }}</span>
+              Status:
+              <span :class="isOnline ? 'text-success' : 'text-danger'">{{
+                isOnline ? 'Online 🟢' : 'Offline 🔴'
+              }}</span>
             </span>
           </li>
 
-          <!-- Links for logged-in users -->
           <template v-if="isLoggedIn">
-            <!-- If on the Email or Appointment page, show both Home and Dashboard -->
             <template v-if="isEmailPage || isAppointmentPage">
               <li class="nav-item">
                 <router-link class="nav-link" to="/">Home</router-link>
@@ -39,7 +39,6 @@
               </li>
             </template>
 
-            <!-- Original behavior for other pages -->
             <li class="nav-item" v-if="isHomePage">
               <router-link class="nav-link" to="/dashboard">Dashboard</router-link>
             </li>
@@ -51,7 +50,6 @@
             </li>
           </template>
 
-          <!-- Links for guests -->
           <template v-else>
             <li class="nav-item" v-if="isHomePage">
               <router-link class="nav-link" to="/login">Login</router-link>
@@ -79,40 +77,39 @@
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
-import { mapGetters } from 'vuex';
-import { ref, onMounted, onBeforeUnmount } from 'vue';  // Import Vue composition API features
+import { useRoute } from 'vue-router'
+import { mapGetters } from 'vuex'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 export default {
-  name: "HeaderComponent",
+  name: 'HeaderComponent',
   setup() {
-    const route = useRoute();
+    const route = useRoute()
 
-    const isHomePage = route.name === 'Home';
-    const isLoginPage = route.name === 'Login';
-    const isRegisterPage = route.name === 'Register';
-    const isDashboardPage = route.name === 'Dashboard';
-    const isEmailPage=route.name==='SendEmail';
-    const isAppointmentPage=route.name==='Appointment';
+    const isHomePage = route.name === 'Home'
+    const isLoginPage = route.name === 'Login'
+    const isRegisterPage = route.name === 'Register'
+    const isDashboardPage = route.name === 'Dashboard'
+    const isEmailPage = route.name === 'SendEmail'
+    const isAppointmentPage = route.name === 'Appointment'
 
-    // Reactive ref to track online status
-    const isOnline = ref(navigator.onLine);
+    const isOnline = ref(navigator.onLine)
 
     // Function to update online status
     const updateOnlineStatus = () => {
-      isOnline.value = navigator.onLine;
-    };
+      isOnline.value = navigator.onLine
+    }
 
     // Hook to add/remove event listeners for online/offline events
     onMounted(() => {
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-    });
+      window.addEventListener('online', updateOnlineStatus)
+      window.addEventListener('offline', updateOnlineStatus)
+    })
 
     onBeforeUnmount(() => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
-    });
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOnlineStatus)
+    })
 
     return {
       isHomePage,
@@ -122,21 +119,20 @@ export default {
       isOnline,
       isAppointmentPage,
       isEmailPage
-        // Return the online status
-    };
+    }
   },
   computed: {
-    ...mapGetters(['isLoggedIn']),  // Get isLoggedIn from Vuex
+    ...mapGetters(['isLoggedIn'])
   },
   methods: {
     logout() {
-      alert("Logged Out Successfully!");
-      this.$store.dispatch('setCurrentUID', null);
-      this.$store.dispatch('logoutUser');  // Trigger logout action
-      this.$router.push('/');  // Redirect to Home page after logout
-    },
-  },
-};
+      alert('Logged Out Successfully!')
+      this.$store.dispatch('setCurrentUID', null)
+      this.$store.dispatch('logoutUser')
+      this.$router.push('/')
+    }
+  }
+}
 </script>
 
 <style scoped>

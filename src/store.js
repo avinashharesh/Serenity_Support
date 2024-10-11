@@ -1,61 +1,48 @@
-import { createStore } from 'vuex';
+import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    users: JSON.parse(localStorage.getItem('users')) || [],  // Array to store multiple users
-    currentUser: null,  // Store the currently logged-in user
-    currentUID: null,    // Store the current user's UID
-    ratings: JSON.parse(localStorage.getItem('ratings')) || [],  // Array to store ratings, each with a reference to the user
-    isLogged: false,  // Track if the user is logged in or not
+    users: JSON.parse(localStorage.getItem('users')) || [],
+    currentUser: null,
+    currentUID: null,
+    isLogged: false
   },
   mutations: {
     // Add a new user and save it to localStorage
     addUser(state, user) {
-      state.users.push(user);
-      localStorage.setItem('users', JSON.stringify(state.users));  // Save to localStorage
+      state.users.push(user)
+      localStorage.setItem('users', JSON.stringify(state.users))
     },
     // Set the current user after login or registration
     setCurrentUser(state, user) {
-      state.currentUser = user;
+      state.currentUser = user
     },
     // Mutation to set currentUID manually
     setCurrentUID(state, uid) {
-      state.currentUID = uid;
-    },
-    // Add or update a rating for a specific user
-    addOrUpdateRating(state, { userId, rating }) {
-      const existingRating = state.ratings.find(r => r.userId === userId);
-      if (existingRating) {
-        existingRating.rating = rating;  // Update the existing rating
-      } else {
-        state.ratings.push({ userId, rating });  // Add new rating if not already rated
-      }
-      // Persist ratings to localStorage
-      localStorage.setItem('ratings', JSON.stringify(state.ratings));
+      state.currentUID = uid
     },
     // Set the logged-in state
     setLoggedIn(state, isLogged) {
-      state.isLogged = isLogged;
+      state.isLogged = isLogged
     },
-    
     // Add a booking to the current user's bookings array
     addBookingToCurrentUser(state, bookingDetails) {
-      const currentUser = state.currentUser;
-      
+      const currentUser = state.currentUser
+
       if (currentUser) {
         // Ensure bookings array exists for the user
         if (!currentUser.bookings) {
-          currentUser.bookings = [];
+          currentUser.bookings = []
         }
-        
+
         // Add the booking to the current user's bookings
-        currentUser.bookings.push(bookingDetails);
-        
+        currentUser.bookings.push(bookingDetails)
+
         // Persist the change to localStorage
-        const userIndex = state.users.findIndex(user => user.username === currentUser.username);
+        const userIndex = state.users.findIndex((user) => user.username === currentUser.username)
         if (userIndex !== -1) {
-          state.users[userIndex] = currentUser;
-          localStorage.setItem('users', JSON.stringify(state.users));
+          state.users[userIndex] = currentUser
+          localStorage.setItem('users', JSON.stringify(state.users))
         }
       }
     }
@@ -63,91 +50,61 @@ export default createStore({
   actions: {
     // Action to register a user
     registerUser({ commit }, user) {
-      commit('setCurrentUser', user);
-      commit('setLoggedIn', true);  // Set isLogged to true when a user registers
+      commit('setCurrentUser', user)
+      commit('setLoggedIn', true)
     },
     // Action to log in a user with their credentials
     loginUser({ commit, state }, credentials) {
       const foundUser = state.users.find(
-        user => user.email === credentials.email && user.password === credentials.password
-      );
+        (user) => user.email === credentials.email && user.password === credentials.password
+      )
       if (foundUser) {
-        commit('setCurrentUser', foundUser);
-        commit('setLoggedIn', true);  // Set isLogged to true when login is successful
-        return true;
+        commit('setCurrentUser', foundUser)
+        commit('setLoggedIn', true)
+        return true
       } else {
-        return false;
-      }
-    },
-    // Action to submit a rating for the current user
-    submitRating({ commit, state }, rating) {
-      if (state.currentUser) {
-        commit('addOrUpdateRating', { userId: state.currentUser.username, rating });
+        return false
       }
     },
     // Action to set currentUID manually
     setCurrentUID({ commit }, uid) {
-      commit('setCurrentUID', uid);  // Commit the mutation to update currentUID
+      commit('setCurrentUID', uid)
     },
     // Action to log out the current user
     logoutUser({ commit }) {
-      commit('setCurrentUser', null);  // Clear the current user
-      commit('setLoggedIn', false);  // Set isLogged to false when the user logs out
-      commit('setCurrentUID', null);  // Clear the currentUID when the user logs out
+      commit('setCurrentUser', null)
+      commit('setLoggedIn', false)
+      commit('setCurrentUID', null)
     },
-    
+
     // Action to add a booking for the current user
     addBooking({ commit }, bookingDetails) {
-      commit('addBookingToCurrentUser', bookingDetails);  // Commit mutation to add the booking
+      commit('addBookingToCurrentUser', bookingDetails)
     }
   },
   getters: {
     // Get the list of all registered users
     getUsers(state) {
-      return state.users;
+      return state.users
     },
-    
+
     // Get the currently logged-in user
     getCurrentUser(state) {
-      return state.currentUser;
+      return state.currentUser
+    },
+
+    getCurrentUserID(state) {
+      return state.currentUID
     },
 
     // Check if a user is logged in
     isLoggedIn(state) {
-      return state.isLogged;
+      return state.isLogged
     },
-
-    // Get the average rating across all users
-    averageRating(state) {
-      if (state.ratings.length === 0) return 0;
-      const total = state.ratings.reduce((sum, r) => sum + r.rating, 0);
-      return (total / state.ratings.length).toFixed(2);
-    },
-
-    // Get the rating for a specific user by their userId (username)
-    getUserRating: (state) => (userId) => {
-      const userRating = state.ratings.find(r => r.userId === userId);
-      return userRating ? userRating.rating : 0;
-    },
-
-    // Get the currently logged-in user's rating, if available
-    getCurrentUserRating(state) {
-      if (state.currentUser) {
-        const currentUserRating = state.ratings.find(r => r.userId === state.currentUser.username);
-        return currentUserRating ? currentUserRating.rating : 0;
-      }
-      return 0;  // Return 0 if no rating is found
-    },
-
     // Get the User ID (UID) of the currently logged-in user
     getCurrentUID(state) {
-      return state.currentUID;
-    },
-    
-    // Get all the ratings
-    getAllRatings(state) {
-      return state.ratings;
+      return state.currentUID
     }
   },
-  modules: {},
-});
+  modules: {}
+})

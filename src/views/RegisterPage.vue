@@ -70,18 +70,15 @@
                 @input="validateConfirmPassword"
                 class="form-control"
               />
-              <div v-if="confirmPasswordError" class="text-danger mt-1">{{ confirmPasswordError }}</div>
+              <div v-if="confirmPasswordError" class="text-danger mt-1">
+                {{ confirmPasswordError }}
+              </div>
             </div>
 
             <!-- Role Selection -->
             <div class="mb-3">
               <label for="role" class="form-label">Role:</label>
-              <select
-                id="role"
-                v-model="role"
-                required
-                class="form-select"
-              >
+              <select id="role" v-model="role" required class="form-select">
                 <option value="" disabled>Select a role</option>
                 <option value="admin">Admin</option>
                 <option value="non-admin">Non-Admin</option>
@@ -105,33 +102,33 @@
 </template>
 
 <script>
-import HeaderComponent from '@/components/HeaderComponent.vue';
-import FooterComponent from '@/components/FooterComponent.vue';
-import DOMPurify from 'dompurify';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from '@/firebaseConfig';
-import { doc,setDoc } from 'firebase/firestore';
+import HeaderComponent from '@/components/HeaderComponent.vue'
+import FooterComponent from '@/components/FooterComponent.vue'
+import DOMPurify from 'dompurify'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth, db } from '@/firebaseConfig'
+import { doc, setDoc } from 'firebase/firestore'
 
 export default {
-  name: "RegisterPage",
+  name: 'RegisterPage',
   components: {
     HeaderComponent,
-    FooterComponent,
+    FooterComponent
   },
   data() {
     return {
-      fullName: "",
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      role: "",
+      fullName: '',
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: '',
       usernameError: null,
       emailError: null,
       passwordError: null,
       confirmPasswordError: null,
-      roleError: null,
-    };
+      roleError: null
+    }
   },
   computed: {
     formValid() {
@@ -147,76 +144,71 @@ export default {
         !this.passwordError &&
         !this.confirmPasswordError &&
         !this.roleError
-      );
-    },
+      )
+    }
   },
   methods: {
     sanitizeInput(field) {
-      this[field] = DOMPurify.sanitize(this[field]);
+      this[field] = DOMPurify.sanitize(this[field])
     },
     validateUsername() {
-      const usernamePattern = /^[a-zA-Z][a-zA-Z0-9]{5,}$/;
+      const usernamePattern = /^[a-zA-Z][a-zA-Z0-9]{5,}$/
       this.usernameError = usernamePattern.test(this.username)
         ? null
-        : "Username must be at least 6 characters, no spaces, and start with a letter.";
+        : 'Username must be at least 6 characters, no spaces, and start with a letter.'
     },
     validateEmail() {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailError = emailPattern.test(this.email)
-        ? null
-        : "Please enter a valid email address.";
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      this.emailError = emailPattern.test(this.email) ? null : 'Please enter a valid email address.'
     },
     validatePassword() {
-      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/;
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/
       this.passwordError = passwordPattern.test(this.password)
         ? null
-        : "Password must be at least 6 characters long, contain an uppercase letter, a lowercase letter, and a special character.";
+        : 'Password must be at least 6 characters long, contain an uppercase letter, a lowercase letter, and a special character.'
     },
     validateConfirmPassword() {
       this.confirmPasswordError =
-        this.confirmPassword === this.password
-          ? null
-          : "Passwords do not match.";
+        this.confirmPassword === this.password ? null : 'Passwords do not match.'
     },
     register() {
-  this.validateUsername();
-  this.validateEmail();
-  this.validatePassword();
-  this.validateConfirmPassword();
+      this.validateUsername()
+      this.validateEmail()
+      this.validatePassword()
+      this.validateConfirmPassword()
 
-  if (this.formValid) {
-    const userData = {
-      fullName: this.fullName,
-      username: this.username,
-      email: this.email,
-      role: this.role === 'admin' ? 'admin' : 'non-admin',
-      bookings: [],
-    };
-
-    createUserWithEmailAndPassword(auth, this.email, this.password)
-      .then((data) => {
-        const user = data.user;
-        console.log("Firebase Register Successful!");
-        alert("Registered Successfully");
-        this.$store.dispatch('registerUser', userData);
-        this.$router.push({ name: 'Home' });
-        // Save user data in Firestore
-        this.$store.dispatch('setCurrentUID', user.uid);
-        setDoc(doc(db, "users", user.uid), userData);
-      })
-      .catch((error) => {
-        // Handle specific Firebase error codes
-        if (error.code === 'auth/email-already-in-use') {
-          this.emailError = 'This email is already registered. Please use a different one.';
-        } else {
-          console.log(error.code); // Log other errors
+      if (this.formValid) {
+        const userData = {
+          fullName: this.fullName,
+          username: this.username,
+          email: this.email,
+          role: this.role === 'admin' ? 'admin' : 'non-admin',
+          bookings: []
         }
-      });
+
+        createUserWithEmailAndPassword(auth, this.email, this.password)
+          .then((data) => {
+            const user = data.user
+            console.log('Firebase Register Successful!')
+            alert('Registered Successfully')
+            this.$store.dispatch('registerUser', userData)
+            this.$router.push({ name: 'Home' })
+            // Save user data in Firestore
+            this.$store.dispatch('setCurrentUID', user.uid)
+            setDoc(doc(db, 'users', user.uid), userData)
+          })
+          .catch((error) => {
+            // Handle specific Firebase error codes
+            if (error.code === 'auth/email-already-in-use') {
+              this.emailError = 'This email is already registered. Please use a different one.'
+            } else {
+              console.log(error.code) // Log other errors
+            }
+          })
+      }
+    }
   }
 }
-
-  },
-};
 </script>
 
 <style scoped>

@@ -9,9 +9,19 @@
       <section class="hero text-center mb-4">
         <div class="container">
           <h2>Supporting Mental Health for All</h2>
-          <p>We provide resources, virtual support, and a community to help you manage your mental health.</p>
-          <router-link v-if="!isLoggedIn" to="/register" class="btn btn-primary mb-3">Join Us Today</router-link>
-          <router-link v-if="isLoggedIn" to="/book-appointment" class="btn btn-outline-secondary">Book an Appointment</router-link>
+          <p>
+            We provide resources, virtual support, and a community to help you manage your mental
+            health.
+          </p>
+          <router-link v-if="!isLoggedIn" to="/register" class="btn btn-primary mb-3"
+            >Join Us Today</router-link
+          >
+          <router-link
+            v-if="isLoggedIn && user.role === 'non-admin'"
+            to="/book-appointment"
+            class="btn btn-outline-secondary"
+            >Book an Appointment</router-link
+          >
         </div>
       </section>
 
@@ -42,24 +52,35 @@
       <!-- What We Offer Section -->
       <section class="offer-section container text-center mt-5">
         <h3>What We Offer</h3>
-        <p class="lead">Our platform is designed to provide comprehensive mental health support, offering:</p>
+        <p class="lead">
+          Our platform is designed to provide comprehensive mental health support, offering:
+        </p>
         <div class="row">
           <div class="col-md-4">
             <div class="offer bg-light p-4 rounded mb-3">
               <h4>Expert Guidance</h4>
-              <p>Connect with certified mental health professionals for personalized support and guidance.</p>
+              <p>
+                Connect with certified mental health professionals for personalized support and
+                guidance.
+              </p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="offer bg-light p-4 rounded mb-3">
               <h4>Community Support</h4>
-              <p>Join a caring and supportive community where you can share experiences and find encouragement.</p>
+              <p>
+                Join a caring and supportive community where you can share experiences and find
+                encouragement.
+              </p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="offer bg-light p-4 rounded mb-3">
               <h4>Self-Help Resources</h4>
-              <p>Access a wide range of self-help materials, including articles, videos, and exercises to enhance your well-being.</p>
+              <p>
+                Access a wide range of self-help materials, including articles, videos, and
+                exercises to enhance your well-being.
+              </p>
             </div>
           </div>
         </div>
@@ -68,26 +89,46 @@
       <!-- Articles Section -->
       <section class="articles-section container mt-5" v-if="isLoggedIn">
         <h3>Helpful Articles</h3>
-        <p class="lead text-center">Explore a range of articles focused on mental health support and well-being.</p>
+        <p class="lead text-center">
+          Explore a range of articles focused on mental health support and well-being.
+        </p>
 
         <!-- Mental Health and Well-Being Articles -->
         <h4>Mental Health and Well-Being Articles</h4>
         <div class="row">
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(07)61238-0/abstract" target="_blank">The Importance of Mental Health Awareness</a></h5>
+              <h5>
+                <a
+                  href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(07)61238-0/abstract"
+                  target="_blank"
+                  >The Importance of Mental Health Awareness</a
+                >
+              </h5>
               <p>Understand why mental health awareness is crucial in today's world.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://japer.in/article/stress-anxiety-and-depression-in-clinical-practice-of-undergraduates-and-awareness-of-its-effective-management-a-survey" target="_blank">How to Manage Anxiety and Stress</a></h5>
+              <h5>
+                <a
+                  href="https://japer.in/article/stress-anxiety-and-depression-in-clinical-practice-of-undergraduates-and-awareness-of-its-effective-management-a-survey"
+                  target="_blank"
+                  >How to Manage Anxiety and Stress</a
+                >
+              </h5>
               <p>Practical tips for managing stress and anxiety from the Mayo Clinic.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://journals.sagepub.com/doi/abs/10.1177/1559827609335152" target="_blank">Building Emotional Resilience</a></h5>
+              <h5>
+                <a
+                  href="https://journals.sagepub.com/doi/abs/10.1177/1559827609335152"
+                  target="_blank"
+                  >Building Emotional Resilience</a
+                >
+              </h5>
               <p>Learn how to develop emotional resilience to cope with life's challenges.</p>
             </div>
           </div>
@@ -98,20 +139,39 @@
         <div class="row">
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2524.2011.01014.x" target="_blank">Self-Care for Mental Health</a></h5>
+              <h5>
+                <a
+                  href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2524.2011.01014.x"
+                  target="_blank"
+                  >Self-Care for Mental Health</a
+                >
+              </h5>
               <p>A guide on self-care practices to improve mental well-being.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://www.nejm.org/doi/abs/10.1056/NEJM200012283432607" target="_blank">Managing Depression</a></h5>
+              <h5>
+                <a href="https://www.nejm.org/doi/abs/10.1056/NEJM200012283432607" target="_blank"
+                  >Managing Depression</a
+                >
+              </h5>
               <p>Effective strategies to manage depression, from Healthline.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://spssi.onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-4560.2010.01662.x" target="_blank">Mental Health Support for Specific Groups</a></h5>
-              <p>Mental health strategies tailored to different populations, including vulnerable groups.</p>
+              <h5>
+                <a
+                  href="https://spssi.onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-4560.2010.01662.x"
+                  target="_blank"
+                  >Mental Health Support for Specific Groups</a
+                >
+              </h5>
+              <p>
+                Mental health strategies tailored to different populations, including vulnerable
+                groups.
+              </p>
             </div>
           </div>
         </div>
@@ -121,8 +181,16 @@
         <div class="row">
           <div class="col-md-4">
             <div class="article-card bg-light p-4 rounded mb-3">
-              <h5><a href="https://journals.sagepub.com/doi/full/10.1177/10497323221118239" target="_blank">Real Stories of Mental Health Recovery</a></h5>
-              <p>Inspirational stories from individuals who have overcome mental health challenges.</p>
+              <h5>
+                <a
+                  href="https://journals.sagepub.com/doi/full/10.1177/10497323221118239"
+                  target="_blank"
+                  >Real Stories of Mental Health Recovery</a
+                >
+              </h5>
+              <p>
+                Inspirational stories from individuals who have overcome mental health challenges.
+              </p>
             </div>
           </div>
         </div>
@@ -134,7 +202,7 @@
         <p>Get instant answers to your mental health-related questions.</p>
 
         <div class="input-group mb-4">
-          <input 
+          <input
             v-model="userQuestion"
             type="text"
             class="form-control"
@@ -154,10 +222,18 @@
       </section>
 
       <!-- Appointment Section -->
-      <section class="appointment-section container text-center mt-5" v-if="isLoggedIn">
+      <section
+        class="appointment-section container text-center mt-5"
+        v-if="isLoggedIn && user.role === 'non-admin'"
+      >
         <h3>Book an Appointment with a Professional</h3>
-        <p>Need personalized support? Schedule an appointment with one of our mental health professionals.</p>
-        <router-link to="/book-appointment" class="btn btn-success">Book an Appointment</router-link>
+        <p>
+          Need personalized support? Schedule an appointment with one of our mental health
+          professionals.
+        </p>
+        <router-link to="/book-appointment" class="btn btn-success"
+          >Book an Appointment</router-link
+        >
       </section>
 
       <!-- Map Section -->
@@ -169,30 +245,32 @@
         <div class="map-features text-center">
           <h4 class="mb-4">Find Places of Interest</h4>
           <div class="input-group mb-4 search-bar">
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Search places (e.g., clinics, parks)" 
-              class="form-control" 
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search places (e.g., clinics, parks)"
+              class="form-control"
             />
             <button class="btn btn-primary search-btn" @click="searchPlaces">Search</button>
           </div>
 
           <h4 class="mb-4">Get Directions</h4>
           <div class="input-group mb-4">
-            <input 
-              v-model="startLocation" 
-              type="text" 
-              placeholder="Start location" 
-              class="form-control mb-3" 
+            <input
+              v-model="startLocation"
+              type="text"
+              placeholder="Start location"
+              class="form-control mb-3"
             />
-            <input 
-              v-model="endLocation" 
-              type="text" 
-              placeholder="Destination" 
-              class="form-control mb-3" 
+            <input
+              v-model="endLocation"
+              type="text"
+              placeholder="Destination"
+              class="form-control mb-3"
             />
-            <button class="btn btn-secondary direction-btn" @click="getDirections">Get Directions</button>
+            <button class="btn btn-secondary direction-btn" @click="getDirections">
+              Get Directions
+            </button>
           </div>
         </div>
       </section>
@@ -203,22 +281,18 @@
   </div>
 </template>
 
-
-
-
 <script>
-import { mapGetters } from 'vuex';
-import axios from 'axios';
-import mapboxgl from 'mapbox-gl'; // Import Mapbox for map functionality
-import HeaderComponent from '@/components/HeaderComponent.vue';
-import FooterComponent from '@/components/FooterComponent.vue';
-
+import { mapGetters } from 'vuex'
+import axios from 'axios'
+import mapboxgl from 'mapbox-gl'
+import HeaderComponent from '@/components/HeaderComponent.vue'
+import FooterComponent from '@/components/FooterComponent.vue'
 
 export default {
-  name: "HomePage",
+  name: 'HomePage',
   components: {
     HeaderComponent,
-    FooterComponent,
+    FooterComponent
   },
   data() {
     return {
@@ -229,198 +303,191 @@ export default {
       userQuestion: '', // The user's question for the AI chatbot
       aiResponse: '', // AI's generated response
       loadingResponse: false, // Loading state while waiting for AI response
-      currentUser:null
-    };
+      currentUser: null
+    }
   },
   computed: {
-    ...mapGetters(['averageRating', 'isLoggedIn']),
+    ...mapGetters(['isLoggedIn', 'getCurrentUser']),
+    user() {
+      return this.getCurrentUser || {}
+    }
   },
   methods: {
-    // Generate star ratings
-    renderStars(rating) {
-      const fullStars = Math.floor(rating);
-      const halfStar = rating % 1 !== 0;
-      const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-      return (
-        '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars)
-      );
-    },
-
-    // GenAI API Integration: Ask question to GenAI (Gemini API)
     async askGenAI() {
-  // Check if the user entered a question
-  if (!this.userQuestion.trim()) {
-    alert('Please enter a question.');
-    return;
-  }
+      if (!this.userQuestion.trim()) {
+        alert('Please enter a question.')
+        return
+      }
 
-  // Set the loading state to true while waiting for the response
-  this.loadingResponse = true;
-  this.aiResponse = ''; // Clear previous responses
+      this.loadingResponse = true
+      this.aiResponse = ''
 
-  try {
-    // Make a request to the Firebase Cloud Function
-    const response = await axios.post('https://us-central1-assignment-cf13c.cloudfunctions.net/askGenAI', {
-      prompt: this.userQuestion, // Send the user's question as the prompt
-    });
+      try {
+        const response = await axios.post(
+          'https://us-central1-assignment-cf13c.cloudfunctions.net/askGenAI',
+          {
+            prompt: this.userQuestion
+          }
+        )
 
-    // Extract the AI-generated text from the response
-    this.aiResponse = response.data.response;
-  } catch (error) {
-    console.error('Error generating response from GenAI:', error);
-    this.aiResponse = 'An error occurred while fetching the response. Please try again later.';
-  } finally {
-    // Turn off the loading state
-    this.loadingResponse = false;
-  }
-},
+        this.aiResponse = response.data.response
+      } catch (error) {
+        console.error('Error generating response from GenAI:', error)
+        this.aiResponse = 'An error occurred while fetching the response. Please try again later.'
+      } finally {
+        // Turn off the loading state
+        this.loadingResponse = false
+      }
+    },
 
     // Initialize the Map with Mapbox and set default location to Melbourne
     async initializeMap() {
-  try {
-    // Fetch the Mapbox token from the Firebase Cloud Function
-    const response = await axios.get('https://us-central1-assignment-cf13c.cloudfunctions.net/getMapboxToken');
-    const mapboxToken = response.data.token;
+      try {
+        // Fetch the Mapbox token from the Firebase Cloud Function
+        const response = await axios.get(
+          'https://us-central1-assignment-cf13c.cloudfunctions.net/getMapboxToken'
+        )
+        const mapboxToken = response.data.token
 
-    // Initialize Mapbox with the secure token
-    mapboxgl.accessToken = mapboxToken;
-    this.map = new mapboxgl.Map({
-      container: 'map', // HTML container id for the map
-      style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
-      center: [144.9631, -37.8136], // Default center: Melbourne
-      zoom: 12, // Initial zoom level
-    });
+        // Initialize Mapbox with the secure token
+        mapboxgl.accessToken = mapboxToken
+        this.map = new mapboxgl.Map({
+          container: 'map', // HTML container id for the map
+          style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
+          center: [144.9631, -37.8136], // Default center: Melbourne
+          zoom: 12 // Initial zoom level
+        })
 
-    // Add zoom and rotation controls to the map
-    this.map.addControl(new mapboxgl.NavigationControl());
+        // Add zoom and rotation controls to the map
+        this.map.addControl(new mapboxgl.NavigationControl())
 
-    // Get user's current location if available, and set the map center
-    this.getUserLocation()
-      .then(location => {
-        this.map.setCenter([location.longitude, location.latitude]);
-      })
-      .catch(() => {
-        console.log('Using default center: Melbourne');
-      });
-  } catch (error) {
-    console.error('Error fetching Mapbox token:', error);
-  }
-},
+        // Get user's current location if available, and set the map center
+        this.getUserLocation()
+          .then((location) => {
+            this.map.setCenter([location.longitude, location.latitude])
+          })
+          .catch(() => {
+            console.log('Using default center: Melbourne')
+          })
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error)
+      }
+    },
 
     // Helper function to get user's current location
     getUserLocation() {
-  return new Promise((resolve, reject) => {
-    if (navigator.geolocation) {
-      // Use the browser's Geolocation API to get the user's current position
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const { latitude, longitude } = position.coords;
-          resolve({ latitude, longitude }); // Resolve with the user's location (latitude and longitude)
-        },
-        error => {
-          // Handle error if the user denies location access or there's a problem with geolocation
-          reject(new Error('Unable to retrieve your location. Please enable location services.'));
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          // Use the browser's Geolocation API to get the user's current position
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords
+              resolve({ latitude, longitude }) // Resolve with the user's location (latitude and longitude)
+            },
+            (error) => {
+              // Handle error if the user denies location access or there's a problem with geolocation
+              reject(
+                new Error('Unable to retrieve your location. Please enable location services.')
+              )
+            }
+          )
+        } else {
+          // Reject the promise if Geolocation API is not supported by the browser
+          reject(new Error('Geolocation is not supported by your browser.'))
         }
-      );
-    } else {
-      // Reject the promise if Geolocation API is not supported by the browser
-      reject(new Error('Geolocation is not supported by your browser.'));
-    }
-  });
-}
-,
-
+      })
+    },
     // Search places near the user's location or Melbourne using Mapbox Geocoding API
     async searchPlaces() {
-      const query = this.searchQuery.trim(); // Trim search query input
+      const query = this.searchQuery.trim()
       if (!query) {
-        alert('Please enter a search query.');
-        return;
+        alert('Please enter a search query.')
+        return
       }
 
-      let proximity = '144.9631,-37.8136'; // Default proximity set to Melbourne
+      let proximity = '144.9631,-37.8136' // Default proximity set to Melbourne
 
       try {
-        // Try to get user's current location for proximity-based searching
-        const location = await this.getUserLocation();
-        proximity = `${location.longitude},${location.latitude}`;
+        const location = await this.getUserLocation()
+        proximity = `${location.longitude},${location.latitude}`
       } catch (error) {
-        console.warn('Using default location (Melbourne) due to error:', error);
+        console.warn('Using default location (Melbourne) due to error:', error)
       }
 
-      // Make request to Mapbox Geocoding API to find places of interest
-      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&limit=5`;
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&limit=5`
 
       try {
-        const response = await axios.get(url);
-        const places = response.data.features;
+        const response = await axios.get(url)
+        const places = response.data.features
 
         // Clear existing markers on the map
-        document.querySelectorAll('.mapboxgl-marker').forEach(marker => marker.remove());
+        document.querySelectorAll('.mapboxgl-marker').forEach((marker) => marker.remove())
 
         if (places.length === 0) {
-          alert('No places found for your search.');
-          return;
+          alert('No places found for your search.')
+          return
         }
 
         // Create a new bounds object to adjust the view later
-        const bounds = new mapboxgl.LngLatBounds();
+        const bounds = new mapboxgl.LngLatBounds()
 
         // Add markers for each search result and extend the map bounds
-        places.forEach(place => {
-          const [longitude, latitude] = place.geometry.coordinates;
+        places.forEach((place) => {
+          const [longitude, latitude] = place.geometry.coordinates
 
           // Add a marker to the map
           new mapboxgl.Marker()
             .setLngLat([longitude, latitude])
-            .setPopup(new mapboxgl.Popup().setHTML(`<h5>${place.text}</h5><p>${place.place_name}</p>`)) // Popup with place name
-            .addTo(this.map);
+            .setPopup(
+              new mapboxgl.Popup().setHTML(`<h5>${place.text}</h5><p>${place.place_name}</p>`)
+            ) // Popup with place name
+            .addTo(this.map)
 
           // Extend map bounds to include this marker
-          bounds.extend([longitude, latitude]);
-        });
+          bounds.extend([longitude, latitude])
+        })
 
         // Fit the map to the bounds of all the markers
-        this.map.fitBounds(bounds, { padding: 50 });
+        this.map.fitBounds(bounds, { padding: 50 })
       } catch (error) {
-        console.error('Error searching places:', error);
-        alert('Error occurred while searching for places. Please try again later.');
+        console.error('Error searching places:', error)
+        alert('Error occurred while searching for places. Please try again later.')
       }
     },
 
     // Get directions from startLocation to endLocation using Mapbox Directions API
     async getDirections() {
-      const start = this.startLocation.trim();
-      const end = this.endLocation.trim();
+      const start = this.startLocation.trim()
+      const end = this.endLocation.trim()
 
       if (!start || !end) {
-        alert('Please provide both start and end locations.');
-        return;
+        alert('Please provide both start and end locations.')
+        return
       }
 
-      const directionsUrl = `https://api.mapbox.com/directions/v5/mapbox/driving/${encodeURIComponent(start)};${encodeURIComponent(end)}?access_token=${mapboxgl.accessToken}`;
+      const directionsUrl = `https://api.mapbox.com/directions/v5/mapbox/driving/${encodeURIComponent(start)};${encodeURIComponent(end)}?access_token=${mapboxgl.accessToken}`
 
       try {
-        const response = await axios.get(directionsUrl);
-        const directions = response.data.routes[0];
+        const response = await axios.get(directionsUrl)
+        const directions = response.data.routes[0]
 
         if (directions) {
-          alert(`Directions found: ${directions.legs[0].summary}`);
+          alert(`Directions found: ${directions.legs[0].summary}`)
           // You can further process the directions and display them on the map
         } else {
-          alert('No directions found.');
+          alert('No directions found.')
         }
       } catch (error) {
-        console.error('Error fetching directions:', error);
-        alert('Failed to retrieve directions. Please try again.');
+        console.error('Error fetching directions:', error)
+        alert('Failed to retrieve directions. Please try again.')
       }
-    },
+    }
   },
   mounted() {
     // Initialize the map when the component is mounted
-    this.initializeMap();
-  },
-};
+    this.initializeMap()
+  }
+}
 </script>
 
 <style scoped>
@@ -516,7 +583,8 @@ export default {
   margin-top: 3rem;
 }
 
-.articles-section h3, .articles-section h4 {
+.articles-section h3,
+.articles-section h4 {
   font-size: 1.75rem;
   margin-bottom: 1rem;
 }
@@ -747,5 +815,4 @@ footer {
     text-align: center;
   }
 }
-
 </style>
