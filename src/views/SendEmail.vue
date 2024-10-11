@@ -116,7 +116,6 @@ export default {
           'https://us-central1-assignment-cf13c.cloudfunctions.net/getUsers'
         )
         this.users = response.data // Assuming the API returns an array of users with fullName, email, and role
-        console.log('Fetched users:', this.users)
       } catch (error) {
         console.error('Error fetching users:', error)
       }
@@ -155,8 +154,6 @@ export default {
           message: this.emailMessage,
           attachment: this.attachment || null // Optional attachment
         }
-
-        console.log('Payload being sent:', payload)
 
         // Make the POST request to your Firebase Cloud Function
         const response = await axios.post(

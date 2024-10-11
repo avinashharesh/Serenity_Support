@@ -105,7 +105,6 @@ export default {
           'https://us-central1-assignment-cf13c.cloudfunctions.net/getUsers'
         )
         this.users = response.data
-        console.log('Fetched users:', this.users)
       } catch (error) {
         console.error('Error fetching users:', error)
       }
@@ -166,8 +165,6 @@ export default {
           bookings: arrayUnion(bookingDetails)
         })
 
-        console.log('Booking details saved to Firestore:', bookingDetails)
-
         this.$store.dispatch('addBooking', bookingDetails)
 
         this.isSubmitted = true
@@ -194,7 +191,6 @@ export default {
         select: (info) => {
           this.form.date = info.start.toISOString().split('T')[0]
           this.form.time = info.start.toTimeString().split(' ')[0]
-          console.log(`Selected date: ${this.form.date}, time: ${this.form.time}`)
         }
       })
       calendar.render()

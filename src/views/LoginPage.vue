@@ -113,15 +113,10 @@ export default {
             this.email = userData.email
             this.role = userData.role
 
-            console.log('User data retrieved from Firestore:', userData)
-
             alert('Logged in successfully')
 
             // Optionally, store user data in Vuex store (if you're using Vuex)
             this.$store.dispatch('registerUser', userData)
-            console.log('Current User:', this.$store.getters.getCurrentUser) // write the get current user here
-            console.log('Current User ID:', this.$store.getters.getCurrentUID)
-            console.log('Current bookings;', this.$store.getters.getCurrentUser.bookings)
 
             // Redirect to the home page after successful login
             this.$router.push({ name: 'Home' })
