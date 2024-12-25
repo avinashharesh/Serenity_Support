@@ -1,12 +1,6 @@
 # Serenity Support: A Mental Health Assistance App
 
-## Project Overview
-As a freelance full-stack web developer, I have designed and developed a modern web application for a distinguished health charity. This organization is dedicated to supporting individuals facing mental health challenges through innovative technology solutions. The application incorporates essential features to enhance user experience and streamline operations.
-
----
-
-## Client Overview
-The client is a renowned health charity focused on improving the health and well-being of individuals facing mental health challenges. They provide crucial resources, support, and education to underrepresented communities.
+Serenity Support is a web application designed to assist individuals facing mental health challenges. Developed for a health charity, the app offers features like secure authentication, email integration, appointment booking, interactive tables, and data export. It also incorporates AI-driven support through the Gemini API and provides essential tools such as a geo-location map and a user-friendly admin dashboard. The app aims to provide valuable resources and improve the well-being of underrepresented communities through innovative technology solutions.
 
 ---
 
